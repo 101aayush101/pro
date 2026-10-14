@@ -96,3 +96,10 @@ html{scroll-behavior:smooth}body:not(.cgl-signed-in) #app{display:none!important
 
 /* Safety net: exam palette never displays more than the current 25 question buttons. */
 .test-shell .palette .numbers > .num:nth-child(n+26){display:none!important}
+
+/* Difficulty filter counts and responsive PYQ mode selector */
+.difficulty-filters{margin-top:-4px;margin-bottom:18px}
+.filter-count{display:inline-block;margin-left:5px;opacity:.72;font-size:11px;font-weight:800}
+.pyq-years{flex-wrap:wrap}
+.pyq-card[hidden]{display:none!important}
+@media(max-width:680px){.pyq-years{width:100%;display:flex;gap:6px}.pyq-years button{flex:1 1 125px;white-space:normal}}
