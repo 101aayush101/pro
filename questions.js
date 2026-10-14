@@ -52,6 +52,8 @@ const catalog=[...Array.from({length:5},(_,i)=>({id:`full-${i+1}`,name:`Full Len
 // they are NOT PYQs and must not be represented as independently verified exam questions.
 const extraCatalog=Array.from({length:12},(_,i)=>({id:'full-'+(i+6),name:'Practice Full Mock '+String(i+6).padStart(2,'0'),type:'full',level:['Moderate practice','Mixed practice','Challenging practice'][i%3],minutes:60,marks:200,questionCount:100,practiceSource:'generated'}));
 catalog.push(...extraCatalog);
+// Foundation full-length paper reuses the four existing Foundation sectionals (25 per subject).
+catalog.push({id:'full-foundation-1',name:'Foundation Full Mock · Easy',type:'full',level:'Easy · foundation practice',minutes:60,marks:200,questionCount:100,practiceSource:'reused-foundation-sectionals'});
 const extraCache=new Map();
 function buildExtra(test){
  if(extraCache.has(test.id))return extraCache.get(test.id);
@@ -74,6 +76,6 @@ function buildExtra(test){
  extraCache.set(test.id,qs);
  return qs;
 }
-function getQuestions(test){if(test.id.startsWith('full-')&&Number(test.id.split('-')[1])>5)return buildExtra(test);if(test.type==='full'){let index=Number(test.id.split('-')[1])-1;return subjects.flatMap((s,si)=>bank[si].slice(index*25,index*25+25))}let index=Number(test.id.split('-').pop())-1;return bank[test.subjectIndex].slice(125+index*25,150+index*25)}
+function getQuestions(test){if(test.id==='full-foundation-1')return subjects.flatMap((subject,si)=>bank[si].slice(125,150).map(q=>({...q,options:[...q.options]})));if(test.id.startsWith('full-')&&Number(test.id.split('-')[1])>5)return buildExtra(test);if(test.type==='full'){let index=Number(test.id.split('-')[1])-1;return subjects.flatMap((s,si)=>bank[si].slice(index*25,index*25+25))}let index=Number(test.id.split('-').pop())-1;return bank[test.subjectIndex].slice(125+index*25,150+index*25)}
 window.CGL_DATA={subjects,catalog,getQuestions};
 })();
