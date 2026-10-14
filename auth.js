@@ -29,4 +29,5 @@ $('auth-form').onsubmit=async ev=>{ev.preventDefault();const button=$('auth-subm
  name=user;sessionStorage.setItem(SESSION,user);document.body.classList.add('cgl-signed-in');el.remove();window.dispatchEvent(new Event('cgl:login'));
  }catch(e){$('auth-error').textContent=e.message||'Unable to sign in';}finally{button.disabled=false;}
 };
+if(mode==='create')switchMode('create');
 })();
