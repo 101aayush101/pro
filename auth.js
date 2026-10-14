@@ -6,7 +6,7 @@ const read=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{retur
 let users=read(),name=sessionStorage.getItem(SESSION);
 if(!name||!users[name]){name=null;sessionStorage.removeItem(SESSION)}
 window.CGL_AUTH={isLoggedIn:()=>!!name,getUsername:()=>name,logout:()=>{sessionStorage.removeItem(SESSION);location.reload()}};
-if(name)return;
+if(name){document.body.classList.add('cgl-signed-in');return;}
 const el=document.createElement('section');el.id='auth-gate';el.setAttribute('aria-label','Sign in to CGL Arena');
 el.innerHTML=`<div class="auth-card"><div class="auth-symbol">✦</div><div class="auth-kicker">YOUR PRACTICE SPACE</div><h1>Welcome to CGL Arena</h1><p class="auth-intro">Create a profile or sign in to save attempts separately for each username on this device.</p><div class="auth-tabs"><button id="auth-login" class="selected" type="button">Sign in</button><button id="auth-create" type="button">Create profile</button></div><form id="auth-form"><label for="auth-user">Username</label><input id="auth-user" required minlength="3" maxlength="24" autocomplete="username" placeholder="e.g. aspirant2026"><label for="auth-pass">Password (minimum 8 characters)</label><div class="auth-pass-row"><input id="auth-pass" required minlength="8" type="password" autocomplete="current-password" placeholder="Enter password"><button id="auth-show" type="button">Show</button></div><p id="auth-error" role="alert"></p><button id="auth-submit" class="auth-primary" type="submit">Sign in →</button></form><p class="auth-privacy">🔒 Passwords are salted and hashed with PBKDF2 inside your browser; they are never uploaded. This is a local convenience lock, not secure server authentication. Clearing browser storage removes profiles and saved progress. There is no password recovery.</p></div>`;
 document.body.appendChild(el);
@@ -26,7 +26,7 @@ $('auth-form').onsubmit=async ev=>{ev.preventDefault();const button=$('auth-subm
   const salt=hex(crypto.getRandomValues(new Uint8Array(16))),hash=await digest(password,salt);
   users[user]={salt,hash};localStorage.setItem(KEY,JSON.stringify(users));
  }else{const record=users[user];if(!record||await digest(password,record.salt)!==record.hash)throw Error('Incorrect username or password.');}
- name=user;sessionStorage.setItem(SESSION,user);el.remove();window.dispatchEvent(new Event('cgl:login'));
+ name=user;sessionStorage.setItem(SESSION,user);document.body.classList.add('cgl-signed-in');el.remove();window.dispatchEvent(new Event('cgl:login'));
  }catch(e){$('auth-error').textContent=e.message||'Unable to sign in';}finally{button.disabled=false;}
 };
 })();
