@@ -48,6 +48,32 @@ function awarenessQ(i){const src=awareness[(i*17+Math.floor(i/awareness.length))
 const generators=[reasoning,awarenessQ,quant,englishQ];
 const bank=subjects.map((_,s)=>Array.from({length:250},(_,i)=>({...generators[s](i),id:`${s}-${i}`})));
 const catalog=[...Array.from({length:5},(_,i)=>({id:`full-${i+1}`,name:`Full Length Mock ${String(i+1).padStart(2,'0')}`,type:'full',level:['Moderate','Moderate–Hard','Moderate','Hard','Moderate–Hard'][i],minutes:60,marks:200,questionCount:100})),...subjects.flatMap((subject,s)=>Array.from({length:5},(_,i)=>({id:`section-${s}-${i+1}`,name:`${['Reasoning','General Awareness','Quantitative Aptitude','English'][s]} · Sectional ${String(i+1).padStart(2,'0')}`,subject,subjectIndex:s,type:'section',level:['Foundation','Moderate','Moderate','Challenging','Mixed'][i],minutes:15,marks:50,questionCount:25})))];
-function getQuestions(test){if(test.type==='full'){let index=Number(test.id.split('-')[1])-1;return subjects.flatMap((s,si)=>bank[si].slice(index*25,index*25+25))}let index=Number(test.id.split('-').pop())-1;return bank[test.subjectIndex].slice(125+index*25,150+index*25)}
+// Twelve additional generated practice papers. Templates can recur across papers;
+// they are NOT PYQs and must not be represented as independently verified exam questions.
+const extraCatalog=Array.from({length:12},(_,i)=>({id:'full-'+(i+6),name:'Practice Full Mock '+String(i+6).padStart(2,'0'),type:'full',level:['Moderate practice','Mixed practice','Challenging practice'][i%3],minutes:60,marks:200,questionCount:100,practiceSource:'generated'}));
+catalog.push(...extraCatalog);
+const extraCache=new Map();
+function buildExtra(test){
+ if(extraCache.has(test.id))return extraCache.get(test.id);
+ const seed=Number(test.id.split('-')[1]);
+ const qs=subjects.flatMap((subject,si)=>{
+  const seen=new Set(),pool=[];
+  // Collect a unique-per-paper question selection, varying the starting point.
+  // English and GK are finite fact pools: questions may repeat ACROSS papers.
+  for(let j=0;j<1600&&pool.length<25;j++){
+   const i=250+((j*37+seed*89+si*13)%1600);
+   const q=generators[si](i);
+   const key=q.question.trim().toLowerCase();
+   if(seen.has(key))continue;
+   if(q.options.length!==4||q.answer<0||q.answer>3)continue;
+   seen.add(key);pool.push({...q,id:'extra-'+seed+'-'+si+'-'+pool.length});
+  }
+  if(pool.length!==25)throw Error('Unable to build practice bank for '+subject);
+  return pool;
+ });
+ extraCache.set(test.id,qs);
+ return qs;
+}
+function getQuestions(test){if(test.id.startsWith('full-')&&Number(test.id.split('-')[1])>5)return buildExtra(test);if(test.type==='full'){let index=Number(test.id.split('-')[1])-1;return subjects.flatMap((s,si)=>bank[si].slice(index*25,index*25+25))}let index=Number(test.id.split('-').pop())-1;return bank[test.subjectIndex].slice(125+index*25,150+index*25)}
 window.CGL_DATA={subjects,catalog,getQuestions};
 })();
