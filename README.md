@@ -1,20 +1,26 @@
-# CGL Arena — Tier-I mock platform
+# CGL Arena — SSC CGL Tier-I Mock Platform
 
-Responsive, zero-dependency, static SSC CGL preparation web app. All content runs locally in the browser, no login required.
+Mobile-first, zero-dependency HTML/CSS/JavaScript exam simulator hosted on GitHub Pages.
 
 ## Test inventory
-- 5 full-length mocks × 100 questions × 60 minutes (25 each: General Intelligence, General Awareness, Quantitative Aptitude, English Comprehension)
-- 5 sectionals per subject × 4 subjects × 25 questions = 20 sectional tests × 15 minutes.
-- 1,000 scheduled question positions. Items use original practice templates and a recycled curated knowledge pool; **not 1,000 independently authored or unique questions**.
+- 5 full mocks, each 100 questions, 60 minutes, 200 marks
+- 20 sectional tests: five per subject (Reasoning, GA, Quant, English), each 25 questions
+- +2 correct, −0.5 wrong, 0 skipped
+- Practice questions are template/generated material; **not** independently authenticated 2026 SSC shift questions, and are **not** 1,000 independently authored unique questions.
 
 ## Features
-SSC-style +2 / −0.5 marking, timed practice with pause, full-screen, subject tabs, palette, previous/next, save and next, mark for review, clear response, localStorage autosave, submission confirmation, time expiry submission, analytics, explanations, answer review, 25-test catalog, search and filters, responsive desktop/mobile views.
+- Responsive phone, tablet and desktop test-taking experience
+- Public, direct links for overview, full mocks, all sectionals, subject-specific sectionals, performance, attempts and every individual test (`#/test/{test-id}`)
+- Local username/password profiles with PBKDF2 salted hashes and separate saved data for each username
+- Save-and-next, clear answer, mark review, question navigation, subject tabs, full screen, practice pause
+- Persisted drafts and answer choices; score breakdown, solution review and per-question time record
+- Local browser storage only; no backend, account recovery, server-side authentication or cross-device synchronization
 
-## Run
-Open `index.html` in a browser. No build step, backend, npm dependencies, or server needed. For hosting on GitHub Pages, publish the root of the `main` branch (Settings → Pages → Deploy from a branch).
+## Local development
+Run a local static web server inside this directory, e.g. `python -m http.server 8000`; visit `http://localhost:8000`.
 
-## Content integrity
-An independent **practice simulator**, not affiliated with SSC. Questions are generated and edited for foundational practice; they are not verified current shift questions or official previous year papers, and their difficulty is only an editorial label. Especially the General Awareness and English pool repeats across tests. The platform does not claim live rank, percentile, official cutoff, or validated difficulty equivalence. Please independently verify before treating a question as authoritative.
+## Authentication privacy note
+This is a **local-device profile gate**, not secure authentication. Password hashes and scores are stored in browser localStorage and are not sent to any server. Do not reuse sensitive passwords. Because GitHub Pages hosts public files, anyone can download the practice question bank or bypass this client-side gate. For enforceable account access and cloud saving, a private database and managed auth provider are required.
 
-## Privacy
-Attempt history and drafts reside solely in the browser's `localStorage` on that device. Clearing site storage erases attempts.
+## Deployment
+GitHub Pages: Settings → Pages → Deploy from a branch → main / (root). The old GitHub Actions Pages workflow is unnecessary.
