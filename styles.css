@@ -93,3 +93,6 @@ html{scroll-behavior:smooth}body:not(.cgl-signed-in) #app{display:none!important
 .pyq-index{margin-top:20px;background:#fff;border:1px solid #e5e9f2;border-radius:13px;padding:22px}.pyq-index h3{margin:0 0 8px}.pyq-index p{font-size:12px;line-height:1.8;color:#7b879f}.pyq-index-links{display:flex;gap:12px;flex-wrap:wrap}.pyq-index-links a{color:#514dff;text-decoration:none;font-size:12px;font-weight:800}
 @media(max-width:1100px){.pyq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.pyq-banner{padding:23px 18px}.pyq-banner-number{display:none}.pyq-grid{grid-template-columns:1fr}.pyq-toolbar{align-items:stretch}.pyq-search-label input{min-width:0;width:100%}.pyq-action-row{flex-direction:column;align-items:stretch}.pyq-action-row .btn{text-align:center}.pyq-years button{flex:1}}
+
+/* Safety net: exam palette never displays more than the current 25 question buttons. */
+.test-shell .palette .numbers > .num:nth-child(n+26){display:none!important}
