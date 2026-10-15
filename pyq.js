@@ -1,34 +1,113 @@
 (function(){
 'use strict';
-// This directory lists sourced PYQ tests. No generated questions are presented as PYQs.
-// External hosts own their question banks and may require a separate login.
-const yearUrls={
- 2025:'https://sarkaribuddy.in/ssc-cgl-tier-1/pyqs/2025',
- 2024:'https://sarkaribuddy.in/ssc-cgl-tier-1/pyqs/2024'
-};
-const labels=['General Intelligence','General Awareness','Quantitative Aptitude','English Comprehension'];
-const shifts=[
- ...Array.from({length:15},(_,day)=>Array.from({length:3},(_,i)=>({year:2025,date:String(day+12).padStart(2,'0')+' Sep',shift:i+1}))).flat(),
- ...[9,10,11,12,13,17,18,19,23,24,25,26].flatMap(day=>Array.from({length:3},(_,i)=>({year:2024,date:String(day).padStart(2,'0')+' Sep',shift:i+1})))
-];
+/* Local, user-controlled PYQ importer. Never publishes third-party paper text to the repo. */
+const SUBJECTS=['General Intelligence','General Awareness','Quantitative Aptitude','English Comprehension'];
+const SOURCE='https://www.adda247.com/jobs/ssc-cgl-previous-year-question-paper/';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let year=2025,search='';
-function init(D){
- // Previous generated PYQ simulations are deliberately not registered in D.catalog.
- // All local mocks remain available in the ordinary Full Length and Sectional libraries.
+let D,username,year=2025,records=[],draftQuestions=[],draftName='',status='';
+const key=()=> 'cgl-arena-pyq-import-v1:'+username;
+function load(){try{const data=JSON.parse(localStorage.getItem(key()));return Array.isArray(data)?data:[]}catch{return []}}
+function save(){localStorage.setItem(key(),JSON.stringify(records))}
+function getQuestion(t){return t?.pyqLocal?t.questions:null}
+function init(data){
+ D=data;username=window.CGL_AUTH.getUsername();records=load();
+ const original=D.getQuestions;
+ D.getQuestions=t=>getQuestion(t)||original(t);
+ for(const t of records)if(t&&t.pyqLocal&&Array.isArray(t.questions)&&!D.catalog.some(x=>x.id===t.id))D.catalog.push(t);
 }
-function render({shell}){
- const yearShifts=shifts.filter(p=>p.year===year);
- const visible=yearShifts.filter(p=>(p.date+' '+p.year+' shift '+p.shift).toLowerCase().includes(search.trim().toLowerCase()));
- shell(`<section class="pyq-banner"><div><span class="pyq-eyebrow">SSC CGL · TIER I</span><h2>Real Previous-Year Papers</h2><p>2025 and 2024 shift-wise PYQ tests from an external question-paper provider. No generated questions or simulated shifts.</p></div><div class="pyq-banner-number"><strong>${yearShifts.length}</strong><span>Shift entries</span></div></section>
- <section class="pyq-notice"><b>Genuine PYQ sources only.</b> Start Test opens the ${year} paper collection on SarkariBuddy in a new tab. Select the matching date and shift there to start its real-question test. A separate login or subscription may be required for some papers. These external tests do not save their scores in CGL Arena. The question bank has not been copied into this website.</section>
- <div class="pyq-toolbar"><div class="pyq-years"><button data-pyq-year="2025" class="${year===2025?'on':''}">2025 PYQ Papers</button><button data-pyq-year="2024" class="${year===2024?'on':''}">2024 PYQ Papers</button></div><label class="pyq-search-label"><span>Find date or shift</span><input id="pyq-search" placeholder="e.g. 12 Sep Shift 2" value="${esc(search)}"></label></div>
- <div class="pyq-grid">${visible.map(p=>`<article class="pyq-card"><div class="pyq-card-top"><span class="pyq-year">${p.year}</span><span>EXTERNAL PYQ TEST</span></div><h3>${p.date} ${p.year}</h3><div class="pyq-shift">Shift ${p.shift}</div><p>SSC CGL Tier I · 100 questions · 60 minutes (publisher listing)</p><div class="pyq-card-foot"><span>Choose this shift on the next page</span><a class="btn" href="${yearUrls[p.year]}" target="_blank" rel="noopener noreferrer">Find &amp; Start Test ↗</a></div></article>`).join('')}</div>
- ${visible.length?'':'<div class="studio-empty">No matching shift. Clear the search to see all available dates.</div>'}
- <section class="pyq-action-row"><div><h3>Want genuine PYQs inside the CGL Arena exam screen?</h3><p>The actual 100 questions, answer choices and verified answer key must be supplied or licensed first. You can already import question sets you have permission to use in Self-Prepare Studio.</p></div><a class="btn" href="#/studio">Import PYQ in Studio →</a></section>`,
- '2024–25 Previous-Year Papers','External timed PYQ tests · 2024 and 2025');
- document.querySelectorAll('[data-pyq-year]').forEach(b=>b.onclick=()=>{year=Number(b.dataset.pyqYear);search='';render({shell})});
- document.getElementById('pyq-search').oninput=e=>{search=e.target.value;render({shell});const input=document.getElementById('pyq-search');input.focus();input.setSelectionRange(search.length,search.length)};
+function parsePaper(text){
+ const normalized=text.replace(/\r/g,'').replace(/[\u00a0\u200b]/g,' ').replace(/\s+\n/g,'\n');
+ // Supports SSC/solution-paper question headings and four lettered or numbered options.
+ const blocks=normalized.split(/(?=^\s*(?:Q(?:uestion)?\.?\s*[-:]?\s*\d{1,3}\s*[.):-]|\d{1,3}\s*[.)]\s+))/gim).filter(x=>x.trim());
+ const out=[];
+ for(const raw of blocks){
+  const lines=raw.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(!lines.length)continue;
+  const head=lines[0].match(/^(?:Q(?:uestion)?\.?\s*[-:]?\s*\d{1,3}|\d{1,3})\s*[.):-]\s*(.*)$/i);
+  if(!head)continue;
+  const opts=[],qLines=[head[1]],optionRe=/^(?:(?:Option\s*)?([1-4])\s*[.):-]|\(([A-D])\)|([A-D])\s*[.):-])\s*(.+)$/i;
+  let started=false;
+  for(const line of lines.slice(1)){
+   const m=line.match(optionRe);
+   if(m){started=true;opts.push(m[4]);}
+   else if(!started)qLines.push(line);
+   else if(opts.length&& !/^(?:Correct\s*Answer|Answer|Ans\.|Explanation|Solution|Chosen\s*Option|Question\s*ID|Status\s*:)/i.test(line))opts[opts.length-1]+=' '+line;
+  }
+  if(opts.length!==4)continue;
+  const question=qLines.join(' ').trim();
+  if(question.length<7)continue;
+  const answerMatch=raw.match(/(?:Correct\s*Answer|Correct\s*Option|Answer|Ans\.)\s*[:.-]?\s*(?:Option\s*)?([A-D1-4])\b/i);
+  const letter=answerMatch?.[1]?.toUpperCase();
+  const answer=letter?('ABCD'.includes(letter)?'ABCD'.indexOf(letter):Number(letter)-1):-1;
+  out.push({question,options:opts,answer,explanation:'Imported from your PDF. Check the official answer key for verification.'});
+ }
+ return out;
 }
-window.CGL_PYQ={init,render,shifts};
+async function pdfText(file){
+ if(!window.pdfjsLib){
+  await new Promise((resolve,reject)=>{
+   const script=document.createElement('script');
+   script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+   script.onload=resolve;script.onerror=()=>reject(Error('PDF reader could not load. Check internet access.'));
+   document.head.appendChild(script);
+  });
+ }
+ const pdfjs=window.pdfjsLib;
+ pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ const doc=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ let full='';
+ for(let p=1;p<=doc.numPages;p++){
+  const page=await doc.getPage(p),content=await page.getTextContent();
+  let lastY=null,line='';
+  for(const item of content.items){
+   const y=item.transform?.[5];
+   if(lastY!==null&&Math.abs(y-lastY)>3){full+=line+'\n';line=''}
+   line+=item.str+' ';
+   lastY=y;
+  }
+  full+=line+'\n';
+ }
+ return full;
+}
+function makePaper(questions,answers,name,yr){
+ const tokens=answers.toUpperCase().match(/[A-D]/g)||[];
+ if(questions.length!==100)throw Error('A full SSC CGL paper needs exactly 100 readable questions. Extracted '+questions.length+'. Try a text-based PDF or paste its question text.');
+ if(tokens.length!==100)throw Error('Provide exactly 100 answer letters (A/B/C/D) from the verified answer key; received '+tokens.length+'.');
+ const all=questions.map((q,i)=>({...q,subject:SUBJECTS[Math.floor(i/25)],answer:'ABCD'.indexOf(tokens[i]),id:'pyq-'+i}));
+ return {id:'pyq-local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),name:name.trim().slice(0,80),type:'full',level:'Imported PDF · user-verified answer key',minutes:60,marks:200,questionCount:100,questions:all,pyqLocal:true,year:yr,createdAt:new Date().toISOString()};
+}
+function render({shell,begin}){
+ const saved=records.filter(t=>t.year===year);
+ shell(`<section class="pyq-banner"><div><span class="pyq-eyebrow">YOUR PAPERS · YOUR EXAM INTERFACE</span><h2>2024 &amp; 2025 PYQ Tests</h2><p>Import a paper once and take it here with the same 4 × 15-minute exam timer, question navigator and result review.</p></div><div class="pyq-banner-number"><strong>${saved.length}</strong><span>Imported papers</span></div></section>
+ <div class="pyq-toolbar"><div class="pyq-years"><button data-pyq-year="2025" class="${year===2025?'on':''}">2025 PYQs</button><button data-pyq-year="2024" class="${year===2024?'on':''}">2024 PYQs</button></div></div>
+ <section class="pyq-notice"><b>No fake shift papers.</b> This library contains only papers imported from PDFs you select. The source may include memory-based or similar papers; confirm its authenticity. The questions stay in this browser and are not publicly republished.</section>
+ <div class="pyq-grid">${saved.map(t=>`<article class="pyq-card"><div class="pyq-card-top"><span class="pyq-year">${t.year}</span><span>IMPORTED PAPER</span></div><h3>${esc(t.name)}</h3><div class="pyq-shift">100 questions · 60 minutes</div><p>Four compulsory 15-minute sections. Runs entirely in CGL Arena.</p><div class="pyq-card-foot"><button class="btn" data-pyq-start="${t.id}">Start Test →</button><button class="btn secondary" data-pyq-delete="${t.id}">Delete</button></div></article>`).join('')}</div>
+ ${saved.length?'':'<div class="studio-empty">No imported '+year+' papers yet. Add your first PDF below to start a genuine paper in this interface.</div>'}
+ <section class="pyq-import-panel"><h3>Import a ${year} SSC CGL PDF into CGL Arena</h3>
+ <p>Get the PDF from <a href="${SOURCE}" target="_blank" rel="noopener noreferrer">Adda247's previous-year paper directory ↗</a>, then select it here. Text-based PDFs work best; scanned images may require OCR. This import runs locally in your browser.</p>
+ <label for="pyq-paper-name">Paper name / date / shift</label><input id="pyq-paper-name" placeholder="e.g. 2025 · 12 Sep · Shift 1" value="${esc(draftName)}">
+ <label for="pyq-pdf-file">Select PDF file</label><input type="file" id="pyq-pdf-file" accept=".pdf,application/pdf">
+ <label for="pyq-raw-text">Or paste extracted paper text (optional)</label><textarea id="pyq-raw-text" rows="5" placeholder="Q.1 ...&#10;A) ...&#10;B) ...&#10;C) ...&#10;D) ..."></textarea>
+ <button class="btn secondary" id="pyq-parse-text">Parse Pasted Text</button>
+ <div id="pyq-import-status" role="status">${esc(status||'No paper parsed yet.')}</div>
+ <label for="pyq-answers">Verified answer key — 100 letters, A/B/C/D in question order</label>
+ <textarea id="pyq-answers" rows="4" placeholder="A B C D A B ... (100 answers)"></textarea>
+ <button class="btn" id="pyq-save-paper">Save 100 Questions &amp; Start Test →</button>
+ <p class="pyq-import-note">Check question order, diagrams and options before saving. Image-only questions may not extract. No correct-answer guessing: the answer key is required for scoring.</p>
+ </section>`,
+ 'Previous-Year Papers','Local PDF import · Same CGL Arena exam engine');
+ document.querySelectorAll('[data-pyq-year]').forEach(b=>b.onclick=()=>{year=Number(b.dataset.pyqYear);draftQuestions=[];status='';render({shell,begin})});
+ document.querySelectorAll('[data-pyq-start]').forEach(b=>b.onclick=()=>{const t=D.catalog.find(x=>x.id===b.dataset.pyqStart);if(t)begin(t)});
+ document.querySelectorAll('[data-pyq-delete]').forEach(b=>b.onclick=()=>{if(!confirm('Delete this imported paper from this browser?'))return;records=records.filter(t=>t.id!==b.dataset.pyqDelete);save();const i=D.catalog.findIndex(t=>t.id===b.dataset.pyqDelete);if(i>=0)D.catalog.splice(i,1);render({shell,begin})});
+ const show=msg=>{status=msg;document.getElementById('pyq-import-status').textContent=msg};
+ document.getElementById('pyq-paper-name').oninput=e=>{draftName=e.target.value};
+ document.getElementById('pyq-pdf-file').onchange=async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(file.size>25*1024*1024){show('PDF too large (maximum 25 MB).');return}
+  try{show('Reading '+file.name+'…');const raw=await pdfText(file);draftQuestions=parsePaper(raw);if(!draftName)draftName=file.name.replace(/\.pdf$/i,'');document.getElementById('pyq-paper-name').value=draftName;show('Extracted '+draftQuestions.length+' complete four-option questions. '+(draftQuestions.length===100?'Ready for answer key.':'A full paper requires 100. Try a different PDF or pasted text.'))}catch(err){show('PDF import error: '+err.message)}
+ };
+ document.getElementById('pyq-parse-text').onclick=()=>{draftQuestions=parsePaper(document.getElementById('pyq-raw-text').value);show('Parsed '+draftQuestions.length+' complete questions. '+(draftQuestions.length===100?'Ready for answer key.':'Need 100 for a full mock.'))};
+ document.getElementById('pyq-save-paper').onclick=()=>{try{if(!draftName.trim())throw Error('Enter a paper name.');const t=makePaper(draftQuestions,document.getElementById('pyq-answers').value,draftName,year);records.unshift(t);save();D.catalog.push(t);draftQuestions=[];status='';begin(t)}catch(err){show(err.message)}};
+}
+window.CGL_PYQ={init,render,parsePaper};
 })();
