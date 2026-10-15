@@ -18,12 +18,12 @@ function init(data){
 function parsePaper(text){
  const normalized=text.replace(/\r/g,'').replace(/[\u00a0\u200b]/g,' ').replace(/\s+\n/g,'\n');
  // Supports SSC/solution-paper question headings and four lettered or numbered options.
- const blocks=normalized.split(/(?=^\\s*(?:Q(?:uestion)?\\.?\\s*[-:]?\\s*\\d{1,3}\\s*[.):-]?\\s+|\\d{1,3}\\s*[.)]\\s+))/gim).filter(x=>x.trim());
+ const blocks=normalized.split(/(?=^\s*(?:Q(?:uestion)?\.?\s*[-:]?\s*\d{1,3}\s*[.):-]?\s+|\d{1,3}\s*[.)]\s+))/gim).filter(x=>x.trim());
  const out=[];
  for(const raw of blocks){
   const lines=raw.split('\n').map(x=>x.trim()).filter(Boolean);
   if(!lines.length)continue;
-  const head=lines[0].match(/^(?:Q(?:uestion)?\\.?\\s*[-:]?\\s*\\d{1,3}|\\d{1,3})\\s*[.):-]?\\s+(.*)$/i);
+  const head=lines[0].match(/^(?:Q(?:uestion)?\.?\s*[-:]?\s*\d{1,3}|\d{1,3})\s*[.):-]?\s+(.*)$/i);
   if(!head)continue;
   const opts=[],qLines=[head[1]],optionRe=/^(?:(?:Option\s*)?([1-4])\s*[.):-]|\(([A-D])\)|([A-D])\s*[.):-])\s*(.+)$/i;
   let started=false;
