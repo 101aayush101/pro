@@ -51,11 +51,11 @@ function analogy(){let b='';b+='<g transform="translate(4 3) scale(.83)">'+motif
 function foldedOnce(){
  let b=rect(15,18,110,110)+line(70,18,70,128,blue,2);b+='<path d="M48 4 Q76 -2 100 5" fill="none" stroke="'+gold+'" stroke-width="2"/>'+txt(70,153,'Fold →',13);
  b+=txt(164,70,'→',25);
- b+=rect(213,18,55,110,ink,2,'#eaf0ff')+line(213,18,213,128,blue,2.7)+circ(245,66,5,ink)+txt(242,153,'Punched sheet',12);
+ b+=rect(213,18,55,110,ink,2,'#eaf0ff')+line(213,18,213,128,blue,2.7)+circ(235,68,5,ink)+txt(242,153,'Punched sheet',12);
  return svg(b,315,166,'One vertical fold with a punched hole in the folded half');}
 function foldedTwice(){
  let b=rect(16,16,112,112)+line(72,16,72,128,blue,2)+line(16,72,128,72,blue,2);b+=txt(72,151,'Two centre folds',12)+txt(160,72,'→',25);
- b+=rect(213,16,56,56,ink,2,'#eaf0ff')+circ(250,46,5,ink)+txt(244,105,'Folded quarter',12);return svg(b,310,167,'Two centre folds followed by a punch away from either crease');
+ b+=rect(213,16,56,56,ink,2,'#eaf0ff')+circ(235,38,5,ink)+txt(244,105,'Folded quarter',12);return svg(b,310,167,'Two centre folds followed by a punch away from either crease');
 }
 function holes(points){let b=rect(19,19,112,112);points.forEach(p=>{b+=circ(19+p[0]*112,19+p[1]*112,5,ink);});return svg(b,151,151,'Unfolded paper and visible punched holes');}
 function embShape(k){return k===0?'M14 93 H44 L76 48 H111 V20':k===1?'M14 93 H44 L76 48 V20 H111':k===2?'M14 93 H44 L76 48 H111 V94':'M14 93 V48 L76 48 H111 V20';}
