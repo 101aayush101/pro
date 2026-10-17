@@ -116,3 +116,13 @@ html{scroll-behavior:smooth}body:not(.cgl-signed-in) #app{display:none!important
 .pyq-import-panel .pyq-import-note{font-size:12px;color:#8a6472}
 .pyq-card-foot .btn{font-size:12px}
 @media(max-width:680px){.pyq-import-panel{padding:16px}.pyq-import-panel .btn{width:100%;text-align:center}}
+
+/* Figure-based tests: shared diagrams in exam and sliding review. */
+.cgl-diagram{display:flex;align-items:center;justify-content:flex-start;width:min(100%,540px);padding:15px 17px;margin:-10px 0 24px;border:1px solid #dfe6f3;border-radius:14px;background:#fff;box-shadow:0 3px 12px #16254008}
+.cgl-diagram .cgl-figure-svg{display:block;width:100%;max-height:245px;height:auto;object-fit:contain}
+.cgl-option-content{display:flex;flex-direction:column;gap:7px;min-width:0;align-items:flex-start;flex:1;font-size:14px}
+.cgl-option-figure{display:block;width:min(100%,220px);padding:4px;background:#fff;border:1px solid #eef0f7;border-radius:7px}
+.cgl-option-figure .cgl-figure-svg{display:block;width:100%;height:auto;max-height:150px}
+.rp-option .cgl-option-figure{width:min(100%,185px)}
+.rp-diagram{max-width:540px;margin:10px 0 20px}
+@media (max-width:650px){.cgl-diagram{padding:8px;margin:0 0 14px}.cgl-diagram .cgl-figure-svg{max-height:195px}.cgl-option-figure{max-width:150px}.cgl-option-figure .cgl-figure-svg{max-height:105px}}
