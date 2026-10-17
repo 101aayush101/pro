@@ -63,8 +63,8 @@ function asym(v){
 }
 ['base','flip','water','rot','twist'].forEach(x=>diagrams['asym-'+x]=asym(x));
 function gear(rot,pip){
- const core=poly('M46 15 L63 38 L47 57 L31 38 Z',C,3,F)+poly('M38 30 L54 46',B,2.5)+circle(...[[19,19],[76,19],[76,76],[19,76]][pip],5,Y);
- return '<g transform="rotate('+rot+' 47 47)">'+core+'</g>';
+ const core=poly('M46 15 L63 38 L47 57 L31 38 Z',C,3,F)+poly('M38 30 L54 46',B,2.5);
+ return '<g transform="rotate('+rot+' 47 47)">'+core+'</g>'+circle(...[[19,19],[76,19],[76,76],[19,76]][pip],5,Y);
 }
 function gearPic(rot,pip){return svg(gear(rot,pip),95,95,'Arrow and moving dot');}
 function gearSeq(){
@@ -114,17 +114,17 @@ function punchSheet(points){
 }
 const reflect4=(x,y)=>[[x,y],[1-x,y],[x,1-y],[1-x,1-y]];
 const distinct=arr=>[...new Map(arr.map(p=>[p.map(x=>x.toFixed(4)).join('/'),p])).values()];
-const p8=distinct([...reflect4(23/126,24/126),...reflect4(46/126,51/126)]);
-const p6=distinct([...reflect4(0,34/126),...reflect4(43/126,41/126)]);
+const p8=distinct([...reflect4(86/126,87/126),...reflect4(109/126,114/126)]);
+const p6=distinct([...reflect4(.5,97/126),...reflect4(106/126,104/126)]);
 const candidateHoles={
 eight:p8,
-eightWrongA:distinct([...reflect4(23/126,24/126),...reflect4(46/126,30/126)]),
-eightWrongB:distinct([...reflect4(23/126,24/126),...reflect4(46/126,51/126)]).slice(0,6),
-eightWrongC:distinct([...reflect4(23/126,24/126),...reflect4(23/126,51/126)]),
+eightWrongA:distinct([...reflect4(86/126,87/126),...reflect4(109/126,93/126)]),
+eightWrongB:p8.slice(0,6),
+eightWrongC:distinct([...reflect4(86/126,87/126),...reflect4(86/126,114/126)]),
 six:p6,
-sixWrongA:distinct([...reflect4(20/126,34/126),...reflect4(43/126,41/126)]),
-sixWrongB:distinct([...reflect4(0,34/126),...reflect4(43/126,41/126)]).slice(0,5),
-sixWrongC:distinct([...reflect4(0,34/126),...reflect4(43/126,18/126)])
+sixWrongA:distinct([...reflect4(84/126,97/126),...reflect4(106/126,104/126)]),
+sixWrongB:p6.slice(0,5),
+sixWrongC:distinct([...reflect4(.5,97/126),...reflect4(106/126,83/126)])
 };
 Object.entries(candidateHoles).forEach(([k,v])=>diagrams['holes-'+k]=punchSheet(v));
 function embeddedShape(kind=0){
