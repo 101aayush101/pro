@@ -15,8 +15,12 @@ const word=(x,y,text,size=14)=>'<text x="'+x+'" y="'+y+'" font-family="Arial,san
 const svg=(s,w=360,h=225,alt='Figure shown in question')=>'<svg class="cgl-figure-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+alt+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';
 const diagrams=Object.create(null);
 function geom(segs,label){
- let s='',S=28,ox=30,oy=197;
- for(const [a,b] of segs)s+=ln([ox+a[0]*S,oy-a[1]*S],[ox+b[0]*S,oy-b[1]*S],C,2.2);
+ const pts=segs.flat(),xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+ const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+ const S=Math.min(292/Math.max(.1,maxX-minX),175/Math.max(.1,maxY-minY));
+ const ox=(370-(maxX-minX)*S)/2-minX*S;
+ const oy=(220+(maxY-minY)*S)/2+minY*S;
+ let s='';for(const [a,b] of segs)s+=ln([ox+a[0]*S,oy-a[1]*S],[ox+b[0]*S,oy-b[1]*S],C,2.2);
  return svg(s,370,220,label);
 }
 function fan(levels,rays,w=8,h=6){
