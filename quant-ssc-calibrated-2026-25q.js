@@ -266,17 +266,17 @@ const questions=[
   {
     "id": "cgl-calibrated-oct26-q18",
     "subject": "Quantitative Aptitude",
-    "topic": "Internal angle bisector",
+    "topic": "Regular polygon angles",
     "practiceDifficulty": "easy",
-    "question": "In △PQR, PS bisects ∠P and meets QR at S. If PQ=12 cm, PR=18 cm and QR=25 cm, find QS.",
+    "question": "Each interior angle of a regular polygon is 156°. How many sides does the polygon have?",
     "options": [
-      "8 cm",
-      "10 cm",
-      "12 cm",
-      "15 cm"
+      "12",
+      "15",
+      "18",
+      "20"
     ],
     "answer": 1,
-    "explanation": "By the internal angle-bisector theorem, QS:SR = PQ:PR = 2:3. Since QR=25, QS=(2/5)×25=10 cm."
+    "explanation": "Each exterior angle = 180°−156°=24°. Since the sum of exterior angles is 360°, the number of sides = 360°/24°=15."
   },
   {
     "id": "cgl-calibrated-oct26-q19",
