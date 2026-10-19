@@ -127,7 +127,7 @@ const bank=[
       "2/3"
     ],
     "answer": 2,
-    "explanation": "cot2θ=(cot²θ−1)/(2cotθ)=(4−1)/4=3/4."
+    "explanation": "Use the cotangent double-angle identity: cot2θ=(cot²θ−1)/(2cotθ). Substituting cotθ=2 gives (4−1)/(2×2)=3/4."
   },
   {
     "id": "trig-all-patterns-oct19-25q-10",
