@@ -34,12 +34,12 @@ function listing(type){
  const difficultyOptions=['all','easy','moderate','hard'];
  const filtered=all.filter(t=>(filter==='all'||t.subject===filter)&&(difficultyFilter==='all'||difficultyOf(t)===difficultyFilter)&&t.name.toLowerCase().includes(search.toLowerCase()));
  const counts=Object.fromEntries(difficultyOptions.map(level=>[level,all.filter(t=>(filter==='all'||t.subject===filter)&&(level==='all'||difficultyOf(t)===level)).length]));
- shell(`<div class="notice">${type==='full'?'Generated exam-length practice tests, each covering all four subjects. Question patterns may repeat across papers.':'Focused 25-question subject tests.'} Correct answer +2, wrong answer −0.5, unattempted 0. Difficulty is a practice label, not an independently calibrated SSC rating.</div>
+ shell(`<div class="notice">${type==='full'?'Generated exam-length practice tests, each covering all four subjects. Question patterns may repeat across papers.':'Focused timed subject tests, including 10-question challenges and 25-question sectionals.'} Correct answer +2, wrong answer −0.5, unattempted 0. Difficulty is a practice label, not an independently calibrated SSC rating.</div>
  <div class="section-head"><h2>Available Tests <span style="color:#9ba5b8">(${filtered.length})</span></h2><input class="search" id="search" placeholder="Search tests..." value="${esc(search)}"></div>
  <div class="filters">${subjects.map(f=>`<button class="chip ${f===filter?'selected':''}" data-filter="${esc(f)}">${f==='all'?'All Subjects':esc(f)}</button>`).join('')}</div>
  <div class="filters difficulty-filters" aria-label="Filter tests by difficulty">${difficultyOptions.map(f=>`<button class="chip ${f===difficultyFilter?'selected':''}" data-difficulty="${f}">${f==='all'?'All Levels':f[0].toUpperCase()+f.slice(1)} <span class="filter-count">${counts[f]}</span></button>`).join('')}</div>
  <div class="test-grid">${filtered.map(testCard).join('')}</div>${filtered.length?'':'<div class="studio-empty">No tests match these filters. Try another difficulty or subject.</div>'}`,
- type==='full'?'Full Length Mocks':'Sectional Test Library',type==='full'?'Exam-length practice papers by difficulty.':'Twenty focused tests across all four SSC CGL subjects.');
+ type==='full'?'Full Length Mocks':'Sectional Test Library',type==='full'?'Exam-length practice papers by difficulty.':'Focused practice across all four SSC CGL subjects.');
  document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;listing(type)});
  document.querySelectorAll('[data-difficulty]').forEach(b=>b.onclick=()=>{difficultyFilter=b.dataset.difficulty;listing(type)});
  document.getElementById('search').oninput=e=>{search=e.target.value;const pos=e.target.selectionStart;listing(type);const fresh=document.getElementById('search');fresh.focus();fresh.setSelectionRange(pos,pos)};
