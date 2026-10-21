@@ -140,8 +140,8 @@ function render(args){
  if(exportBtn)exportBtn.onclick=()=>{
   const header=['Attempt date','Shift','Question','Subject','Estimated topic','Topic confidence','Outcome','Seconds'];
   const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const csv=[header.map(cell).join(','),...rows.map(r=>[r.stamp,r.name,r.questionIndex,r.subject,r.topic,r.confidence,r.correct?'Correct':r.wrong?'Wrong':'Skipped',r.seconds??''].map(cell).join(','))].join('\\r\\n');
-  const url=URL.createObjectURL(new Blob(['\\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  const csv=[header.map(cell).join(','),...rows.map(r=>[r.stamp,r.name,r.questionIndex,r.subject,r.topic,r.confidence,r.correct?'Correct':r.wrong?'Wrong':'Skipped',r.seconds??''].map(cell).join(','))].join(String.fromCharCode(13,10));
+  const url=URL.createObjectURL(new Blob([String.fromCharCode(65279)+csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download='cgl-arena-pyq-analysis.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
  const sort=document.getElementById('pi-topic-sort');if(sort)sort.onchange=()=>{topicSort=sort.value;render(ui)};
