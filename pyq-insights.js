@@ -15,13 +15,13 @@ function classify(q){
  for(const [topic,re] of rules[s])if(re.test(txt))return {subject:SUBJECTS[s],topic,confidence:'estimated'};
  return {subject:SUBJECTS[s],topic:'Unclassified',confidence:'low'};
 }
-function getRows(history,catalog){
+function getRows(history,catalog,scope='pyq',getQuestions=null){
  const byId=new Map(catalog.map(t=>[t.id,t]));
  const attempts=[],rows=[];
  for(const h of history){
   const t=byId.get(h.testId);
-  if(!t?.pyqLocal||!Array.isArray(h.answers))continue;
-  const qs=Array.isArray(h.customQuestions)&&h.customQuestions.length?h.customQuestions:t.questions;
+  if(!t||(scope==='pyq'&&!t.pyqLocal)||!Array.isArray(h.answers))continue;
+  const qs=Array.isArray(h.customQuestions)&&h.customQuestions.length?h.customQuestions:Array.isArray(t.questions)?t.questions:typeof getQuestions==='function'?getQuestions(t):null;
   if(!Array.isArray(qs)||!qs.length)continue;
   const attempt={...h,source:t};
   attempts.push(attempt);
@@ -53,7 +53,7 @@ function aggregate(rows){
 const scoreClass=n=>n>=4?'good':n>=3?'mid':'bad';
 const fmt=n=>Number.isFinite(n)?Math.floor(n/60)+'m '+String(Math.round(n%60)).padStart(2,'0')+'s':'—';
 const rating=x=>x.rating===null?'<span class="pi-rating na">Insufficient data</span>':`<span class="pi-rating ${scoreClass(x.rating)}" aria-label="${x.rating} out of 5 stars">${'★'.repeat(x.rating)}<span class="pi-dim">${'☆'.repeat(5-x.rating)}</span> <b>${x.rating}/5</b></span>`;
-let tab='papers',subject='all',topicSort='priority',trendMode='score',onlyWeak=false,notes={},store='',ui={};
+let tab='papers',subject='all',topicSort='priority',trendMode='score',onlyWeak=false,notes={},store='',ui={},currentScope='pyq';
 function saveNotes(){try{localStorage.setItem(store,JSON.stringify(notes))}catch(e){console.warn('Could not save topic notes',e)}}
 function topicId(x){return x.subject+'||'+x.topic}
 function statusOf(x){return notes[topicId(x)]?.status||'todo'}
@@ -122,14 +122,15 @@ function improve({rows,stats}){
 }
 function render(args){
  ui=args;
- const {history=[],catalog=[],shell,begin,renderPapers}=args;
- const {attempts,rows}=getRows(history,catalog),stats=aggregate(rows);
- const tabs=[['papers','Shift Library'],['overview','Overview'],['analytics','Deep Analysis'],['improve','Improve Studio']];
- const content=`<div class="pi-hero"><div><span class="pi-eyebrow">CGL ARENA · PERFORMANCE INTELLIGENCE</span><h2>Shift Practice <span>& Performance Lab</span></h2><p>Learn from every paper. Track every mistake. Build a measurable improvement plan.</p></div><div class="pi-hero-stat"><strong>${attempts.length}</strong><span>Shift attempts</span></div></div>
+ const {history=[],catalog=[],shell,begin,renderPapers,scope='pyq',getQuestions}=args;
+ if(currentScope!==scope){currentScope=scope;tab=scope==='all'?'overview':'papers';subject='all';}
+ const {attempts,rows}=getRows(history,catalog,scope,getQuestions),stats=aggregate(rows);
+ const tabs=[...(scope==='pyq'?[['papers','Shift Library']]:[]),['overview','Overview'],['analytics','Deep Analysis'],['improve','Improve Studio']];
+ const content=`<div class="pi-hero"><div><span class="pi-eyebrow">CGL ARENA · PERFORMANCE INTELLIGENCE</span><h2>${scope==='all'?'Performance <span>& Improvement Lab</span>':'Shift Practice <span>& Performance Lab</span>'}</h2><p>${scope==='all'?'All mocks, sectionals and shift tests in one place. Turn every attempt into a targeted revision plan.':'Learn from every paper. Track every mistake. Build a measurable improvement plan.'}</p></div><div class="pi-hero-stat"><strong>${attempts.length}</strong><span>Shift attempts</span></div></div>
  <div class="pi-tabs" role="tablist" aria-label="PYQ workspace sections">${tabs.map(([id,label])=>`<button role="tab" aria-selected="${tab===id}" class="${tab===id?'active':''}" data-pi-tab="${id}">${label}</button>`).join('')}</div>
  <div class="pi-content">${tab==='papers'?'<div id="pi-papers"></div>':tab==='overview'?overview({attempts,rows,stats}):tab==='analytics'?analytics({attempts,rows,stats}):improve({attempts,rows,stats})}</div>`;
- shell(content,'2025 Shift Practice','Interactive shift tests · Evidence-based improvement');
- if(tab==='papers')renderPapers(document.getElementById('pi-papers'),args);
+ shell(content,scope==='all'?'Performance Analytics':'2025 Shift Practice',scope==='all'?'All completed tests · Evidence-based topic improvement':'Interactive shift tests · Evidence-based improvement');
+ if(tab==='papers'&&typeof renderPapers==='function')renderPapers(document.getElementById('pi-papers'),args);
  document.querySelectorAll('[data-pi-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.piTab;render(ui)});
  document.querySelectorAll('[data-pi-switch]').forEach(b=>b.onclick=()=>{tab=b.dataset.piSwitch;render(ui)});
  document.querySelectorAll('[data-pi-sub]').forEach(b=>b.onclick=()=>{subject=b.dataset.piSub;render(ui)});
