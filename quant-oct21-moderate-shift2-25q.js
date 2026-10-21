@@ -403,8 +403,8 @@ function buildings(){
  '<rect x="113" y="45" width="34" height="180" fill="#dbeafe" stroke="'+palette.blue+'" stroke-width="2"/><rect x="234" y="105" width="38" height="120" fill="#dcfce7" stroke="'+palette.teal+'" stroke-width="2"/>'+
  '<circle cx="130" cy="45" r="3.5" fill="'+palette.ink+'"/>'+
  '<line x1="130" y1="45" x2="321" y2="45" stroke="'+palette.soft+'" stroke-width="1.6" stroke-dasharray="5 5"/>'+
- '<line x1="130" y1="45" x2="253" y2="105" stroke="'+palette.orange+'" stroke-width="2.6"/>'+
- '<line x1="130" y1="45" x2="253" y2="225" stroke="'+palette.orange+'" stroke-width="2.6"/>'+
+ '<line x1="130" y1="45" x2="234" y2="105" stroke="'+palette.orange+'" stroke-width="2.6"/>'+
+ '<line x1="130" y1="45" x2="234" y2="225" stroke="'+palette.orange+'" stroke-width="2.6"/>'+
  '<text x="153" y="94" fill="'+palette.ink+'" font-size="14">30°</text><text x="150" y="137" fill="'+palette.ink+'" font-size="14">60°</text><text x="68" y="140" fill="'+palette.ink+'" font-size="14">30 m</text><text x="279" y="166" fill="'+palette.ink+'" font-size="14">h = ?</text><text x="39" y="24" fill="'+palette.soft+'" font-size="13">Schematic only</text>';
  return svgWrap(s,390,250,'Two vertical buildings: taller building 30 m; depression angles from tall top to shorter top 30 degrees and foot 60 degrees');
 }
