@@ -84,7 +84,7 @@ function analytics({attempts,rows,stats}){
  const scoped=subject==='all'?rows:rows.filter(x=>x.subject===SUBJECTS[Number(subject)]);
  const groups=SUBJECTS.map((s,i)=>({s,i,rows:rows.filter(x=>x.subject===s)}));
  const sorted=attempts.slice().sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
- return `<div class="pi-panel"><div class="pi-panel-heading"><h3>Attempt intelligence</h3><span>Raw scores · no percentile or shift normalization</span></div>
+ return `<div class="pi-panel"><div class="pi-panel-heading"><h3>Attempt intelligence</h3><button class="btn secondary" id="pi-export">↓ Export question analytics CSV</button></div><p class="pi-hint">Raw scores · no percentile or shift normalization</p>
  <div class="pi-attempt-list">${sorted.length?sorted.map(a=>`<div class="pi-attempt"><div><b>${esc(a.name)}</b><small>${new Date(a.timestamp).toLocaleDateString()} · ${a.correct} correct / ${a.wrong} wrong / ${a.skip} skipped</small></div><div class="pi-attempt-score"><b>${a.score}/200</b><span>${a.accuracy}% accuracy</span></div><button class="btn secondary" data-pi-review="${esc(a.testId)}" data-pi-timestamp="${esc(a.timestamp)}">Review →</button></div>`).join(''):'<div class="pi-empty-mini">Take a shift to see score history and detailed reviews.</div>'}</div></div>
  <div class="pi-two"><section class="pi-panel"><div class="pi-panel-heading"><h3>Accuracy by section</h3><span>Attempted questions only</span></div>${groups.map(g=>{const n=g.rows.filter(x=>x.attempted).length,c=g.rows.filter(x=>x.correct).length,p=n?Math.round(c/n*100):0;return `<div class="pi-meter"><div><b>${SHORT[g.i]}</b><strong>${n?p+'%':'—'}</strong></div><div class="pi-track"><i style="width:${p}%"></i></div><small>${c}/${n} correct · ${g.rows.filter(x=>x.skip).length} skipped</small></div>`}).join('')}</section>
  <section class="pi-panel"><div class="pi-panel-heading"><h3>Error fingerprint</h3><span>What costs you marks</span></div>
@@ -100,7 +100,7 @@ function topicRows(stats,withAction){
  const filtered=onlyWeak?ordered.filter(x=>x.wrong||x.skip):ordered;
  return filtered.length?filtered.map(x=>{
  const key=topicId(x),done=statusOf(x),isUnclassified=x.topic==='Unclassified';
- return `<div class="pi-topic-row"><div class="pi-topic-main"><b>${esc(x.topic)}</b><small>${esc(SHORT[SUBJECTS.indexOf(x.subject)]||x.subject)} · ${x.attempted} attempted ${isUnclassified?'· Needs manual classification':''}</small></div>
+ return `<div class="pi-topic-row"><div class="pi-topic-main"><b>${esc(x.topic)}</b><small>${esc(SHORT[SUBJECTS.indexOf(x.subject)]||x.subject)} · ${x.attempted} attempted ${isUnclassified?'· Needs manual classification':''}</small>${withAction&&notes[key]?.note?`<small class="pi-saved-note">✎ ${esc(notes[key].note)}</small>`:''}</div>
  <div class="pi-topic-fig"><strong>${x.attempted?x.accuracy+'%':'—'}</strong><small>${x.correct} ✓ · ${x.wrong} ✕ · ${x.skip} —</small></div>
  <div class="pi-topic-rating">${rating(x)}<small>Avg time: ${fmt(x.avgTime)}</small></div>
  ${withAction?`<div class="pi-topic-actions"><select aria-label="Revision status for ${esc(x.topic)}" data-pi-status="${esc(key)}"><option value="todo" ${done==='todo'?'selected':''}>To revise</option><option value="doing" ${done==='doing'?'selected':''}>Practising</option><option value="done" ${done==='done'?'selected':''}>Revised ✓</option></select><button class="pi-note-btn" data-pi-note="${esc(key)}" title="Add personal revision note">✎ Notes</button></div>`:''}</div>`;
@@ -136,6 +136,14 @@ function render(args){
  document.querySelectorAll('[data-pi-subject]').forEach(b=>b.onclick=()=>{subject=b.dataset.piSubject;tab='analytics';render(ui)});
  document.querySelectorAll('[data-pi-status]').forEach(el=>el.onchange=()=>{notes[el.dataset.piStatus]??={};notes[el.dataset.piStatus].status=el.value;saveNotes();render(ui)});
  document.querySelectorAll('[data-pi-note]').forEach(el=>el.onclick=()=>{const key=el.dataset.piNote,old=notes[key]?.note||'';const next=prompt('Your revision note for '+key.split('||')[1],old);if(next===null)return;notes[key]??={};notes[key].note=next.slice(0,1000);saveNotes();el.textContent=next?'✓ Noted':'✎ Notes'});
+ const exportBtn=document.getElementById('pi-export');
+ if(exportBtn)exportBtn.onclick=()=>{
+  const header=['Attempt date','Shift','Question','Subject','Estimated topic','Topic confidence','Outcome','Seconds'];
+  const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv=[header.map(cell).join(','),...rows.map(r=>[r.stamp,r.name,r.questionIndex,r.subject,r.topic,r.confidence,r.correct?'Correct':r.wrong?'Wrong':'Skipped',r.seconds??''].map(cell).join(','))].join('\\r\\n');
+  const url=URL.createObjectURL(new Blob(['\\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='cgl-arena-pyq-analysis.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ };
  const sort=document.getElementById('pi-topic-sort');if(sort)sort.onchange=()=>{topicSort=sort.value;render(ui)};
  const weak=document.getElementById('pi-only-weak');if(weak)weak.onchange=()=>{onlyWeak=weak.checked;render(ui)};
  document.querySelectorAll('[data-pi-review]').forEach(el=>el.onclick=()=>{location.hash='#/result/'+el.dataset.piReview+'/'+encodeURIComponent(el.dataset.piTimestamp||'')});
