@@ -10,7 +10,7 @@ function load(){try{const data=JSON.parse(localStorage.getItem(key()));return Ar
 function save(){localStorage.setItem(key(),JSON.stringify(records))}
 function getQuestion(t){return t?.pyqLocal?t.questions:null}
 function init(data){
- D=data;username=window.CGL_AUTH.getUsername();
+ D=data;username=window.CGL_AUTH.getUsername();window.CGL_PYQ_INSIGHTS?.init(username);
  const source=window.CGL_PRELOADED_PYQ;
  embedded=[];incomplete=[];
  if(source?.format==='cgl-arena-pyq-bundle-v1'&&Array.isArray(source.papers)){
@@ -117,7 +117,7 @@ function importBundle(data){
  D.catalog.push(...next);
  return {added,updated,skipped};
 }
-function render({shell,begin}){
+function renderPapers({shell,begin}){
  const saved=[...embedded,...records].filter(t=>t.year===year);
  shell(`<section class="pyq-banner"><div><span class="pyq-eyebrow">2025 SHIFT PAPERS · IN-SITE TESTS</span><h2>2024 &amp; 2025 PYQ Tests</h2><p>The uploaded shift papers are already built in. Click Start Test—no downloads, JSON imports or external exam sites.</p></div><div class="pyq-banner-number"><strong>${saved.length}</strong><span>Ready to start</span></div></section>
  <div class="pyq-toolbar"><div class="pyq-years"><button data-pyq-year="2025" class="${year===2025?'on':''}">2025 PYQs</button><button data-pyq-year="2024" class="${year===2024?'on':''}">2024 PYQs</button></div></div>
@@ -138,7 +138,7 @@ function render({shell,begin}){
  <p class="pyq-import-note">Check question order, diagrams and options before saving. Image-only questions may not extract. No correct-answer guessing: the answer key is required for scoring.</p>
  </section>`,
  'Previous-Year Papers','Local PDF import · Same CGL Arena exam engine');
- document.querySelectorAll('[data-pyq-year]').forEach(b=>b.onclick=()=>{year=Number(b.dataset.pyqYear);draftQuestions=[];status='';render({shell,begin})});
+ document.querySelectorAll('[data-pyq-year]').forEach(b=>b.onclick=()=>{year=Number(b.dataset.pyqYear);draftQuestions=[];status='';renderPapers({shell,begin})});
  document.querySelectorAll('[data-pyq-start]').forEach(b=>b.onclick=()=>{const t=D.catalog.find(x=>x.id===b.dataset.pyqStart);if(t)begin(t)});
  document.querySelectorAll('[data-pyq-delete]').forEach(b=>b.onclick=()=>{if(!confirm('Delete this imported paper from this browser?'))return;records=records.filter(t=>t.id!==b.dataset.pyqDelete);save();const i=D.catalog.findIndex(t=>t.id===b.dataset.pyqDelete);if(i>=0)D.catalog.splice(i,1);render({shell,begin})});
  const show=msg=>{status=msg;document.getElementById('pyq-import-status').textContent=msg};
@@ -150,6 +150,12 @@ function render({shell,begin}){
  };
  document.getElementById('pyq-parse-text').onclick=()=>{draftQuestions=parsePaper(document.getElementById('pyq-raw-text').value);show('Parsed '+draftQuestions.length+' complete questions. '+(draftQuestions.length===100?'Ready for answer key.':'Need 100 for a full mock.'))};
  document.getElementById('pyq-save-paper').onclick=()=>{try{if(!draftName.trim())throw Error('Enter a paper name.');const t=makePaper(draftQuestions,document.getElementById('pyq-answers').value,draftName,year);records.unshift(t);save();D.catalog.push(t);draftQuestions=[];status='';begin(t)}catch(err){show(err.message)}};
+}
+function render({shell,begin,history=[]}){
+ if(!window.CGL_PYQ_INSIGHTS)return renderPapers({shell,begin});
+ window.CGL_PYQ_INSIGHTS.render({shell,begin,history,catalog:D.catalog,renderPapers:(container)=>{
+  renderPapers({shell:(html)=>{container.innerHTML=html},begin});
+ }});
 }
 window.CGL_PYQ={init,render,parsePaper,importBundle};
 })();
