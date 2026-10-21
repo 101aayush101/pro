@@ -138,7 +138,7 @@ function render(args){
  document.querySelectorAll('[data-pi-note]').forEach(el=>el.onclick=()=>{const key=el.dataset.piNote,old=notes[key]?.note||'';const next=prompt('Your revision note for '+key.split('||')[1],old);if(next===null)return;notes[key]??={};notes[key].note=next.slice(0,1000);saveNotes();el.textContent=next?'✓ Noted':'✎ Notes'});
  const sort=document.getElementById('pi-topic-sort');if(sort)sort.onchange=()=>{topicSort=sort.value;render(ui)};
  const weak=document.getElementById('pi-only-weak');if(weak)weak.onchange=()=>{onlyWeak=weak.checked;render(ui)};
- document.querySelectorAll('[data-pi-review]').forEach(el=>el.onclick=()=>{location.hash='#/result/'+el.dataset.piReview});
+ document.querySelectorAll('[data-pi-review]').forEach(el=>el.onclick=()=>{location.hash='#/result/'+el.dataset.piReview+'/'+encodeURIComponent(el.dataset.piTimestamp||'')});
 }
 function init(username){
  store='cgl-arena-pyq-improve-v1:'+username;
