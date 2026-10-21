@@ -53,7 +53,7 @@ function aggregate(rows){
 const scoreClass=n=>n>=4?'good':n>=3?'mid':'bad';
 const fmt=n=>Number.isFinite(n)?Math.floor(n/60)+'m '+String(Math.round(n%60)).padStart(2,'0')+'s':'—';
 const rating=x=>x.rating===null?'<span class="pi-rating na">Insufficient data</span>':`<span class="pi-rating ${scoreClass(x.rating)}" aria-label="${x.rating} out of 5 stars">${'★'.repeat(x.rating)}<span class="pi-dim">${'☆'.repeat(5-x.rating)}</span> <b>${x.rating}/5</b></span>`;
-let tab='papers',subject='all',topicSort='priority',trendMode='score',onlyWeak=false,notes={},store='',ui={},currentScope='pyq';
+let tab='papers',subject='all',topicSort='priority',trendMode='score',onlyWeak=false,notes={},store='',ui={},currentScope='pyq',pendingTab=null;
 function saveNotes(){try{localStorage.setItem(store,JSON.stringify(notes))}catch(e){console.warn('Could not save topic notes',e)}}
 function topicId(x){return x.subject+'||'+x.topic}
 function statusOf(x){return notes[topicId(x)]?.status||'todo'}
@@ -63,22 +63,22 @@ function overview({attempts,rows,stats}){
  const top=stats.filter(x=>x.topic!=='Unclassified'&&x.attempted>=3).sort((a,b)=>b.priority-a.priority).slice(0,3);
  return `<div class="pi-kpis">
  <div class="pi-kpi"><span>Shift attempts</span><strong>${attempts.length}</strong><small>Completed in this browser</small></div>
- <div class="pi-kpi"><span>Latest score</span><strong>${latest?latest.score+'/200':'—'}</strong><small>${latest?esc(latest.name):'Complete a shift to unlock'}</small></div>
+ <div class="pi-kpi"><span>Latest score</span><strong>${latest?latest.score+'/'+(latest.marks||200):'—'}</strong><small>${latest?esc(latest.name):'Complete a shift to unlock'}</small></div>
  <div class="pi-kpi"><span>Overall accuracy</span><strong>${attempted.length?Math.round(correct.length/attempted.length*100)+'%':'—'}</strong><small>${correct.length} correct / ${attempted.length} attempted</small></div>
  <div class="pi-kpi"><span>Avg question time</span><strong>${fmt(avgTime)}</strong><small>Only questions with recorded timing</small></div></div>
  ${!attempts.length?'<div class="pi-empty"><h3>Your analytics start with your first shift</h3><p>Take any 2025 paper. This dashboard will then show your real score trends, subject accuracy, question timing and topic-level weaknesses.</p><button class="btn" data-pi-switch="papers">Explore 2025 papers →</button></div>':`
- <div class="pi-two"><section class="pi-panel"><div class="pi-panel-heading"><h3>Subject performance</h3><span>Across all PYQ attempts</span></div>
+ <div class="pi-two"><section class="pi-panel"><div class="pi-panel-heading"><h3>Subject performance</h3><span>Across selected completed tests</span></div>
  ${SUBJECTS.map((s,i)=>{const a=rows.filter(r=>r.subject===s),n=a.filter(r=>r.attempted).length,c=a.filter(r=>r.correct).length,p=n?Math.round(c/n*100):0;return `<button class="pi-subrow" data-pi-subject="${i}"><div class="pi-subline"><b>${SHORT[i]}</b><strong>${n?p+'%':'—'}</strong></div><div class="pi-track"><i style="width:${p}%"></i></div><small>${c} correct · ${a.filter(r=>r.wrong).length} wrong · ${a.filter(r=>r.skip).length} skipped</small></button>`}).join('')}</section>
  <section class="pi-panel"><div class="pi-panel-heading"><h3>Next best improvements</h3><span>Based on wrong + skipped answers</span></div>
  ${top.length?top.map((x,i)=>`<div class="pi-focus"><span class="pi-rank">0${i+1}</span><div><b>${esc(x.topic)}</b><small>${esc(SHORT[SUBJECTS.indexOf(x.subject)]||x.subject)} · ${x.wrong} wrong · ${x.skip} skipped</small></div>${rating(x)}</div>`).join(''):'<div class="pi-empty-mini">Attempt more questions to identify topic priorities.</div>'}
  <button class="btn secondary pi-wide" data-pi-switch="improve">Open Improvement Studio →</button></section></div>
- <section class="pi-panel"><div class="pi-panel-heading"><h3>Score trajectory</h3><span>Chronological PYQ attempts · out of 200</span></div>${trend(attempts)}</section>`}
+ <section class="pi-panel"><div class="pi-panel-heading"><h3>Score trajectory</h3><span>Chronological attempts · scores shown as % of maximum marks</span></div>${trend(attempts)}</section>`}
  `;
 }
 function trend(attempts){
  if(!attempts.length)return '<div class="pi-empty-mini">No scores yet.</div>';
  const sorted=attempts.slice().reverse().slice(-14);
- return `<div class="pi-trend" role="img" aria-label="Score trend for last ${sorted.length} attempts">${sorted.map((a,i)=>{const score=Math.max(0,Math.min(200,Number(a.score)||0));return `<div class="pi-trend-item" title="${esc(a.name)}: ${a.score}/200"><b>${a.score}</b><div class="pi-trend-col"><i style="height:${Math.max(2,score/2)}%"></i></div><small>${i+1}</small></div>`}).join('')}</div><p class="pi-hint">Left to right: oldest to newest among the last ${sorted.length} attempts. Bars show raw marks, not normalized scores.</p>`;
+ return `<div class="pi-trend" role="img" aria-label="Score trend for last ${sorted.length} attempts">${sorted.map((a,i)=>{const score=Math.max(0,Math.min(100,100*(Number(a.score)||0)/(Number(a.marks)||200)));return `<div class="pi-trend-item" title="${esc(a.name)}: ${a.score}/${a.marks||200}"><b>${a.score}</b><div class="pi-trend-col"><i style="height:${Math.max(2,score)}%"></i></div><small>${i+1}</small></div>`}).join('')}</div><p class="pi-hint">Left to right: oldest to newest among the last ${sorted.length} attempts. Bars show the percentage of maximum marks; labels show raw scores.</p>`;
 }
 function analytics({attempts,rows,stats}){
  const scoped=subject==='all'?rows:rows.filter(x=>x.subject===SUBJECTS[Number(subject)]);
@@ -123,7 +123,7 @@ function improve({rows,stats}){
 function render(args){
  ui=args;
  const {history=[],catalog=[],shell,begin,renderPapers,scope='pyq',getQuestions}=args;
- if(currentScope!==scope){currentScope=scope;tab=scope==='all'?'overview':'papers';subject='all';}
+ if(currentScope!==scope){currentScope=scope;tab=pendingTab|| (scope==='all'?'overview':'papers');pendingTab=null;subject='all';}
  const {attempts,rows}=getRows(history,catalog,scope,getQuestions),stats=aggregate(rows);
  const tabs=[...(scope==='pyq'?[['papers','Shift Library']]:[]),['overview','Overview'],['analytics','Deep Analysis'],['improve','Improve Studio']];
  const content=`<div class="pi-hero"><div><span class="pi-eyebrow">CGL ARENA · PERFORMANCE INTELLIGENCE</span><h2>${scope==='all'?'Performance <span>& Improvement Lab</span>':'Shift Practice <span>& Performance Lab</span>'}</h2><p>${scope==='all'?'All mocks, sectionals and shift tests in one place. Turn every attempt into a targeted revision plan.':'Learn from every paper. Track every mistake. Build a measurable improvement plan.'}</p></div><div class="pi-hero-stat"><strong>${attempts.length}</strong><span>Shift attempts</span></div></div>
@@ -153,5 +153,5 @@ function init(username){
  store='cgl-arena-pyq-improve-v1:'+username;
  try{notes=JSON.parse(localStorage.getItem(store))||{}}catch{notes={}}
 }
-window.CGL_PYQ_INSIGHTS={init,render,classify,getRows,aggregate,open(tabName){if(['papers','overview','analytics','improve'].includes(tabName))tab=tabName}};
+window.CGL_PYQ_INSIGHTS={init,render,classify,getRows,aggregate,open(tabName){if(['papers','overview','analytics','improve'].includes(tabName)){tab=tabName;pendingTab=tabName}}};
 })();
