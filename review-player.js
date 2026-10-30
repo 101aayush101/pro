@@ -16,7 +16,7 @@ function mount({result,questions,filter='all'}){
  let state=cache.get(key);
  if(!state){state={responses:{},checked:{},revealed:{},positions:{},expanded:false};cache.set(key,state);}
  let at=Math.min(Math.max(0,state.positions[filter]||0),Math.max(0,items.length-1));
- const letter='ABCD';
+ const letter='ABCDE';
  function show(){
   if(!root.isConnected)return;
   if(!items.length){
@@ -42,7 +42,7 @@ function mount({result,questions,filter='all'}){
         <div class="rp-toolbar"><div class="rp-counter">QUESTION ${i+1} <span>· ${at+1} of ${items.length} ${escapeHtml(filter==='all'?'questions':filter+' questions')}</span></div><button type="button" class="rp-expand" data-rp-expand aria-label="${state.expanded?'Close expanded review':'Expand review'}">${state.expanded?'↙ Exit full view':'⛶ Expand view'}</button></div>
         <div class="rp-slide" key="${i}">
           <div class="rp-status"><span class="rp-pill rp-${statuses[status]}">Original: ${status}</span><span>Time on original attempt: ${asTime((result.qTimes||[])[i])}</span></div>
-          <h3 class="rp-question">${escapeHtml(q.question)}</h3><div class="rp-saved-original"><strong>Recorded answer in original test:</strong> ${original===null?'Not attempted':letter[original]+'. '+escapeHtml(q.options[original])}<span> You can retry below, but retry selections do not change your original score.</span></div>${q.figure?`<div class="cgl-diagram rp-diagram">${window.CGL_VISUALS?.render(q.figure)||""}</div>`:""}
+          ${q.context?`<pre style="white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.6;border:1px solid #ccd5e0;border-radius:12px;padding:15px;margin-bottom:16px;max-height:320px;overflow-y:auto;background:#f8fafc;color:#1e293b">${escapeHtml(q.context)}</pre>`:""}<h3 class="rp-question">${escapeHtml(q.question)}</h3><div class="rp-saved-original"><strong>Recorded answer in original test:</strong> ${original===null?'Not attempted':letter[original]+'. '+escapeHtml(q.options[original])}<span> You can retry below, but retry selections do not change your original score.</span></div>${q.figure?`<div class="cgl-diagram rp-diagram">${window.CGL_VISUALS?.render(q.figure)||""}</div>`:""}
           <div class="rp-options" role="group" aria-label="Retry question ${i+1}">
             ${q.options.map((opt,j)=>`<button type="button" data-rp-answer="${j}" class="rp-option ${chosen===j?'rp-selected':''} ${reveal&&j===q.answer?'rp-answer-right':''} ${reveal&&chosen===j&&j!==q.answer?'rp-answer-wrong':''}" ${checked?'disabled':''} aria-pressed="${chosen===j?'true':'false'}"><span class="rp-letter">${letter[j]}</span><span class="cgl-option-content">${escapeHtml(opt)}${q.optionFigures?.[j]?`<span class="cgl-option-figure">${window.CGL_VISUALS?.render(q.optionFigures[j])||""}</span>`:""}</span>${reveal&&j===q.answer?'<span class="rp-icon">✓</span>':''}${reveal&&chosen===j&&j!==q.answer?'<span class="rp-icon">×</span>':''}</button>`).join('')}
           </div>
