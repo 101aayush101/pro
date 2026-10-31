@@ -389,3 +389,29 @@ body{font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
 /* Extra bottom breathing room for the new context-rich world cards */
 @media(min-width:651px){.fantasy-map{min-height:1880px}.world-stops{height:1880px}}
+
+/* Persistent, accessible navigation Back button across all History Quest screens */
+.game-top .game-back{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ flex-shrink:0;min-height:42px;padding:10px 14px;
+ background:#2b3154;color:#f5edff;border:1px solid #6f729f;border-radius:12px;
+ font:800 12px 'DM Sans',sans-serif;letter-spacing:0;
+ box-shadow:0 4px 12px #0e153829;transition:background .2s,transform .2s,border-color .2s;
+}
+.game-top .game-back:hover{background:#6658b2;border-color:#b7a7ed;transform:translateX(-2px)}
+.game-top .game-back:focus-visible{outline:3px solid #e4cb98;outline-offset:3px}
+@media(max-width:1150px){
+ .game-top .game-back{min-height:40px;padding:9px 12px}
+ .game-brand{min-width:0}
+}
+@media(max-width:650px){
+ .game-top .game-back{min-width:44px;min-height:42px;padding:9px 10px;gap:5px;font-size:13px}
+ .game-top .game-back span{font-size:11px}
+ .game-top{gap:8px}
+ .game-brand{font-size:15px}
+ .game-hud>span{font-size:10px;padding:9px}
+}
+@media(max-width:390px){
+ .game-top .game-back span{display:none}
+ .game-top .game-back{font-size:18px}
+}
