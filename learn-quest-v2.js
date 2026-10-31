@@ -99,7 +99,7 @@ function setScreen(screen){
  else{ui.screen=screen;render()}
 }
 function notice(msg){ui.toast=msg;render()}
-function stage(i){if(!unlocked(i)){const prev=i-1;notice('🔒 Unlock '+WORLDS[i].name+' by exploring at least 4 events in '+WORLDS[prev].name+'.');return}ui.era=i;ui.selected=i+'-0';ui.screen='mission';render()}
+function stage(i){if(!unlocked(i)){const prev=i-1;notice('🔒 Unlock '+WORLDS[i].name+' by exploring at least 4 events in '+WORLDS[prev].name+'.');return}ui.era=i;ui.selected=i+'-0';ui.screen='mission';ui.toast='';render()}
 function wanderMap(){
  const marks=['⛵','🔥','🏛','🕊','☀'];
  const pt=WORLDS;
@@ -264,7 +264,7 @@ function currentBoss(){
 function boss(){
  const x=currentBoss();
  if(!x)return '<div class="hq-boss-empty"><h3>⚔️ Your opponent awaits.</h3><p>Answer questions to defeat the exam boss. Every miss goes to your weak-zone rematch.</p><button data-hq-begin="full" class="hq-primary">Start Boss Battle</button></div>';
- const b=x.b,answered=x.pick!==undefined,done=b.sequence.filter(i=>b.picks[i]!==undefined).length,total=b.sequence.length,hp=100-Math.round(done/total*100),right=b.sequence.filter(i=>b.picks[i]===questions[i][2]).length,misses=done-right;
+ const b=x.b,answered=x.pick!==undefined,done=b.sequence.filter(i=>b.picks[i]!==undefined).length,total=b.sequence.length,hp=100-Math.round(right/total*100),right=b.sequence.filter(i=>b.picks[i]===questions[i][2]).length,misses=done-right;
  return '<div class="hq-arena"><div class="hq-arena-head"><div><span class="hq-eyebrow">⚔️ '+(b.mode==='retry'?'DANGER ZONE REMATCH':'THE FINAL EXAM BOSS')+'</span><h3>'+(b.mode==='retry'?'Revenge on your weak zones':'Face the Keeper of 1947')+'</h3><p>'+(b.mode==='retry'?'Every wrong answer returns as a rematch. Fix it for good.':'Victory depends on recall, not random guessing. Deal damage by answering.')+'</p></div><button class="hq-arena-exit" data-hq-screen="world">Exit Arena ✕</button></div>'+
  '<div class="hq-boss-stage"><div class="hq-boss-character"><span class="hq-boss-horns">♛</span><div class="hq-boss-face"><span>⚔️</span></div><div class="hq-boss-tag">'+(b.mode==='retry'?'THE WEAKNESS WRAITH':'THE EXAM GUARDIAN')+'</div></div>'+
  '<div class="hq-boss-ui"><div class="hq-boss-health"><b>👹 BOSS HP</b><span>'+hp+'%</span></div><div class="hq-boss-healthbar"><i style="width:'+hp+'%"></i></div><div class="hq-boss-combo"><span>⚡ '+b.streak+' COMBO</span><span>🏹 '+right+' HITS</span><span>🛡 '+misses+' MISSES</span></div></div></div>'+
@@ -358,7 +358,7 @@ function bind(){
  const close=document.querySelector('[data-hq-close]');if(close)close.onclick=()=>{ui.toast='';render()};
 }
 function bindSide(){
- document.querySelectorAll('[data-hq-learn]').forEach(el=>el.onclick=()=>{progress.learned[el.dataset.hqLearn]=true;save();render()});
+ document.querySelectorAll('[data-hq-learn]').forEach(el=>el.onclick=()=>{const id=el.dataset.hqLearn,was=!!progress.learned[id],before=eras.map((e,i)=>unlocked(i));progress.learned[id]=true;save();const unlockedNow=eras.findIndex((e,i)=>!before[i]&&unlocked(i));if(!was){ui.toast=unlockedNow>=0?'🏰 NEW REALM UNLOCKED: '+WORLDS[unlockedNow].name+'! +10 XP':'✨ MEMORY UNLOCKED · +10 XP! Keep collecting milestones.'}render()});
  document.querySelectorAll('[data-hq-save]').forEach(el=>el.onclick=()=>{const id=el.dataset.hqSave;progress.saved[id]=!progress.saved[id];save();render()});
  document.querySelectorAll('[data-hq-next]').forEach(el=>el.onclick=()=>{
   const idx=items.findIndex(n=>n.id===el.dataset.hqNext),next=items[idx+1];
