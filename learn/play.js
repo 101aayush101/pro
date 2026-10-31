@@ -21,7 +21,20 @@ function heroes(){
 function heroCard(a,i){
  const [id,name,epithet,era,icon,role,bio,facts,event,color1,color2]=a;
  const locked=!open(era);
- return `<article class="collectible" style="--portrait-a:${color1};--portrait-b:${color2}"><div class="collectible-visual"><span class="collectible-series">LEGEND · ${String(i+1).padStart(2,'0')}</span><div class="collectible-portrait">${art.portrait(id,name)}</div><span class="collectible-emblem">${icon}</span></div><div class="collectible-info"><small>${esc(epithet)}</small><h3>${esc(name)}</h3><p>${esc(bio)}</p><div class="collectible-facts">${facts.map(f=>`<span>✦ ${esc(f)}</span>`).join('')}</div><button data-event="${event}" ${locked?'disabled':''}>${locked?'🔒 Unlock story world':'UNLOCK HERO STORY ↗'}</button></div></article>`;
+ return `<article class="collectible" style="--portrait-a:${color1};--portrait-b:${color2}"><div class="collectible-visual"><span class="collectible-series">LEGEND · ${String(i+1).padStart(2,'0')}</span><div class="collectible-portrait">${art.portrait(id,name)}</div><span class="collectible-emblem">${icon}</span></div><div class="collectible-info"><small>${esc(epithet)}</small><h3>${esc(name)}</h3><p>${esc(bio)}</p><div class="collectible-facts">${facts.map(f=>`<span>✦ ${esc(f)}</span>`).join('')}</div><button data-qaction="hero-dossier" data-hero="${id}">OPEN HERO DOSSIER ↗</button></div></article>`;
+}
+function dossier(heroId){
+ const hero=heroData.find(x=>x[0]===heroId);if(!hero)return;
+ const [id,name,epithet,era,icon,role,bio,facts,event,c1,c2]=hero;
+ document.getElementById('hero-dossier')?.remove();
+ const overlay=document.createElement('div');
+ overlay.id='hero-dossier';overlay.className='hero-modal-backdrop';
+ const relevant=id==='bhagat'?null:events.find(x=>x.id===event);
+ overlay.innerHTML=`<section class="hero-modal" role="dialog" aria-modal="true" aria-labelledby="hero-modal-title"><button class="hero-modal-close" data-close-dossier aria-label="Close hero dossier">×</button><div class="hero-modal-art" style="--portrait-a:${c1};--portrait-b:${c2}">${art.portrait(id,name)}<span>${icon} ${esc(epithet)}</span></div><div class="hero-modal-body"><span class="eyebrow">✪ CHARACTER DOSSIER / ${esc(eras[era].period)}</span><h2 id="hero-modal-title">${esc(name)}</h2><h3>${esc(role)}</h3><p>${esc(bio)}</p><div class="hero-modal-facts"><h4>⚡ POWER FACTS</h4>${facts.map(f=>`<div>✦ ${esc(f)}</div>`).join('')}</div><div class="hero-modal-actions"><button class="action-primary" data-close-dossier>BACK TO HEROES</button>${relevant&&open(relevant.era)?`<button class="hero-story-link" data-dossier-event="${relevant.id}">EXPLORE LINKED EVENT →</button>`:''}</div>${!relevant?'<small>Hero dossier only · A matching dedicated event is not in the current timeline.</small>':''}</div></section>`;
+ document.body.appendChild(overlay);
+ overlay.addEventListener('click',evt=>{const go=evt.target.closest('[data-dossier-event]');if(go){overlay.remove();select(go.dataset.dossierEvent);return}if(evt.target===overlay||evt.target.closest('[data-close-dossier]'))overlay.remove()});
+ overlay.addEventListener('keydown',evt=>{if(evt.key==='Escape')overlay.remove()});
+ overlay.querySelector('[data-close-dossier]')?.focus();
 }
 function deck(){return events.filter(x=>state.forgeRegion==='all'||x.era===Number(state.forgeRegion))}
 function forge(){
@@ -65,6 +78,7 @@ function finish(){
 }
 function action(btn){
  const type=btn.dataset.qaction||btn.dataset.faction;
+ if(type==='hero-dossier'){dossier(btn.dataset.hero);return}
  if(type==='flip'){state.flipped=!state.flipped;render();return}
  if(btn.dataset.faction&&['prev','next','know'].includes(type)){
   const len=deck().length,ev=deck()[state.forgeIndex];
