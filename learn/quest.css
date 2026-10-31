@@ -167,3 +167,25 @@
 @media(max-width:380px){.collectible-grid{grid-template-columns:1fr}.collectible-info>p,.collectible-facts{min-height:0}.adventure-copy h1{font-size:36px}.hero-scores{gap:7px}.game-hud>span{padding:7px;font-size:10px}}
 @keyframes bossFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-13px) rotate(3deg)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Collectible hero dossier overlay */
+.hero-modal-backdrop{position:fixed;inset:0;z-index:300;background:#101329cc;backdrop-filter:blur(9px);display:grid;place-items:center;padding:20px;animation:modalIn .23s ease-out}
+.hero-modal{max-height:min(90vh,760px);overflow:auto;width:min(780px,100%);display:grid;grid-template-columns:43% 57%;background:#fffaf5;color:#2d3048;border-radius:26px;position:relative;box-shadow:0 40px 110px #080a2299}
+.hero-modal-close{position:absolute;right:17px;top:14px;z-index:2;background:#ffffffc9;border:0;width:36px;height:36px;border-radius:12px;font-size:23px;color:#5a5672}
+.hero-modal-art{background:radial-gradient(circle at 40% 38%,var(--portrait-a),var(--portrait-b));min-height:380px;position:relative;display:flex;justify-content:center;align-items:end;overflow:hidden}
+.hero-modal-art:before{content:"";position:absolute;width:270px;height:270px;border:2px solid #ffffff70;border-radius:50%;top:16%;box-shadow:0 0 0 20px #ffffff17,0 0 0 43px #ffffff0c}
+.hero-modal-art svg{width:100%;position:relative;z-index:1;max-width:360px;transform:translateY(13px);filter:drop-shadow(0 23px 17px #2a214030)}
+.hero-modal-art>span{position:absolute;z-index:2;left:17px;top:17px;padding:9px 13px;background:#ffffffbf;color:#594667;font-size:11px;font-weight:900;border-radius:20px}
+.hero-modal-body{padding:42px 32px}
+.hero-modal-body .eyebrow{color:#9b7cc1}
+.hero-modal-body h2{font:900 37px 'Outfit',sans-serif;line-height:1.12;margin:14px 0 6px}
+.hero-modal-body h3{font:800 15px 'Outfit',sans-serif;color:#9b6db8;margin:0 0 16px}
+.hero-modal-body>p{color:#6d7089;font-size:13px}
+.hero-modal-facts{background:#f5f0fd;border-radius:14px;padding:17px;margin:19px 0}
+.hero-modal-facts h4{font-size:12px;color:#7554ae;margin:0 0 12px}
+.hero-modal-facts>div{padding:7px 0;font-size:12px;color:#4c456b;font-weight:800}
+.hero-modal-actions{display:flex;flex-wrap:wrap;gap:9px}
+.hero-story-link{border:1px solid #cfc2e8;border-radius:13px;background:white;color:#6952a0;font-size:11px;font-weight:900;padding:13px}
+.hero-modal-body>small{display:block;color:#9b96a3;font-size:10px;margin-top:13px}
+@keyframes modalIn{from{opacity:0}to{opacity:1}}
+@media(max-width:650px){.hero-modal{grid-template-columns:1fr;max-height:92vh}.hero-modal-art{min-height:200px;height:220px}.hero-modal-art svg{max-width:230px}.hero-modal-art:before{width:180px;height:180px;top:6%}.hero-modal-body{padding:23px}.hero-modal-body h2{font-size:29px}}
