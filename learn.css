@@ -69,3 +69,10 @@
 @media(max-width:1100px){.lh-grid{grid-template-columns:1fr}.lh-detail{position:static}.lh-eras{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.lh-hero{padding:25px 22px}.lh-eras{display:flex;overflow-x:auto}.lh-era{min-width:168px}.lh-map-heading{padding:18px 15px 8px}.lh-tools{padding:12px 15px;flex-wrap:wrap}.lh-tools input{min-width:160px}.lh-svg{min-width:690px}.lh-boss{padding:18px}.lh-answers{grid-template-columns:1fr}.lh-boss-header{align-items:flex-start}.lh-boss-points{padding:12px}.lh-card{padding:24px;min-height:290px}.lh-card-actions>button{padding:10px!important;font-size:11px}.lh-journey-stats{grid-template-columns:1fr 1fr}.lh-journey-grid{grid-template-columns:1fr}.lh-badges{grid-template-columns:repeat(3,1fr)}}
 @media(prefers-reduced-motion:reduce){.lh-era,.lh-card{transition:none}}
+
+.lh-dashboard-promo{background:linear-gradient(105deg,#e9e6ff,#f3f5ff 72%,#e5fbf4);border:1px solid #dcd9ff;border-radius:17px;padding:22px 25px;margin:20px 0;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.lh-dashboard-promo span{font-size:10px;color:#5f56c9;font-weight:800;letter-spacing:.12em}
+.lh-dashboard-promo h3{font:800 20px Manrope;color:#252e52;margin:8px 0}
+.lh-dashboard-promo p{font-size:12px;color:#6f7897;line-height:1.5;margin:0}
+.lh-dashboard-promo .btn{white-space:nowrap}
+@media(max-width:700px){.lh-dashboard-promo{flex-direction:column;align-items:flex-start}.lh-dashboard-promo .btn{width:100%}}
