@@ -63,8 +63,8 @@
 .hq-mission-progress{max-width:500px;position:relative}.hq-mission-progress>div:first-child{display:flex;justify-content:space-between;font-size:11px;gap:10px;margin-bottom:9px}.hq-mission-progress span{color:#fff1cf}
 .hq-meter{height:10px;border-radius:99px;background:#ffffff38;overflow:hidden}.hq-meter i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#f3d187,#7febbf);transition:width .4s}
 .hq-mission-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(295px,370px);gap:15px;align-items:start}
-.hq-quest-scroll{background:#f5efdd;border:1px solid #e7dbc0;border-radius:19px;overflow:hidden;box-shadow:0 6px 22px #5c512319}
-.hq-quest-scroll-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e8dfc9;padding:15px 18px;background:#fff7e9}
+.hq-quest-scroll{background:#f5efdd;border:1px solid #e7dbc0;border-radius:19px;overflow:auto;max-height:830px;scrollbar-color:#c9b994 #f5efdd;scrollbar-width:thin;box-shadow:0 6px 22px #5c512319}
+.hq-quest-scroll-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e8dfc9;padding:15px 18px;background:#fff7e9;position:sticky;top:0;z-index:2}
 .hq-quest-scroll-heading span{font-size:10px;letter-spacing:.11em;font-weight:900;color:#6a573d}.hq-quest-scroll-heading small{font-size:10px;color:#8d8066}
 .hq-mission-svg{display:block;width:100%;min-width:560px;height:auto}
 .hq-mission-road{fill:none;stroke:#b6a581;stroke-width:12;stroke-linecap:round;stroke-dasharray:3 18;animation:hq-dash 18s linear infinite}
@@ -199,3 +199,8 @@
 .hq-result-stats,.hq-vault-stats{grid-template-columns:repeat(2,1fr)}.hq-vault-panel{padding:17px}.hq-badge-grid{grid-template-columns:repeat(3,1fr)}.hq-weak-list{grid-template-columns:1fr}.hq-result-actions{flex-direction:column}.hq-result-actions button{width:100%}.hq-vault-rematch{flex-direction:column;align-items:flex-start}.hq-vault-rematch button{width:100%}}
 @media(max-width:370px){.hq-world-cards{grid-template-columns:1fr}.hq-hero-grid{grid-template-columns:1fr 1fr}.hq-boss-stage{grid-template-columns:100px 1fr}.hq-boss-face{width:86px;height:94px}}
 @media(prefers-reduced-motion:reduce){.hq-root *, .hq-root *:before,.hq-root *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.hq-toast{animation:hq-toast-enter .35s cubic-bezier(.15,.84,.33,1.34)}
+@keyframes hq-toast-enter{from{opacity:0;transform:translateY(-13px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.hq-node-halo{pointer-events:none}
+@media(max-width:600px){.hq-quest-scroll{max-height:650px}}
