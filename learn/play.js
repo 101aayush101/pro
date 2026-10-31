@@ -47,9 +47,14 @@ function newRun(ids,mode){
  persist();go('boss');
 }
 function weakQuestions(){
- const list=save.runs.slice(0,3);const wrong=new Set();
- for(const run of list)for(const id of run.ids)if(run.picks[id]!==questions[id]?.[2])wrong.add(Number(id));
- return [...wrong].sort((a,b)=>a-b);
+ // Judge each question by its most recent completed answer, so successful rematches remove it from the queue.
+ const latest=new Map();
+ for(const run of save.runs){
+  for(const id of run.ids){
+   if(!latest.has(id)&&run.picks[id]!==undefined)latest.set(id,run.picks[id]);
+  }
+ }
+ return [...latest.entries()].filter(([id,pick])=>questions[id]&&pick!==questions[id][2]).map(([id])=>Number(id)).sort((a,b)=>a-b);
 }
 function stats(run){
  if(!run)return {right:0,wrong:0,count:0,combo:0,max:0};
