@@ -66,7 +66,7 @@ function finish(){
 function action(btn){
  const type=btn.dataset.qaction||btn.dataset.faction;
  if(type==='flip'){state.flipped=!state.flipped;render();return}
- if(['prev','next','know'].includes(type)){
+ if(btn.dataset.faction&&['prev','next','know'].includes(type)){
   const len=deck().length,ev=deck()[state.forgeIndex];
   if(type==='know'){if(!save.learned[ev.id]){save.learned[ev.id]=true;persist();toast('✨ +10 XP memory captured!')}state.forgeIndex=(state.forgeIndex+1)%len}
   else state.forgeIndex=(state.forgeIndex+(type==='next'?1:-1)+len)%len;
