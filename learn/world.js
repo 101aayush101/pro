@@ -11,8 +11,8 @@ function worldHero(){
  return `<section class="adventure-hero"><div class="adventure-copy"><span class="hero-kicker">✦ INTERACTIVE MODERN INDIAN HISTORY RPG</span><h1>One nation.<br><em>One epic quest.</em></h1><p>Discover 190 years of turning points. Wander through five worlds, collect legendary stories, defeat exam traps, and unlock the road to freedom.</p><div class="adventure-actions"><button class="action-primary" data-enter="${target}">${explored()?'⚡ CONTINUE THE ADVENTURE':'⚡ BEGIN THE ADVENTURE'} <span>↗</span></button><button class="action-ghost" data-go="heroes">Meet the legends ↗</button></div><div class="hero-scores"><div><strong>${explored()}<small>/53</small></strong><span>Events explored</span></div><div><strong>${xp()}</strong><span>Explorer XP</span></div><div><strong>${badges().filter(x=>x[2]).length}<small>/8</small></strong><span>Achievements</span></div></div></div>${illustratedHero()}</section>`;
 }
 function background(){
-const road="M 238 184 C 325 328, 740 276, 797 462 S 330 625, 235 770 S 734 902, 797 1082 S 335 1210, 294 1439";
-return `<svg class="map-backdrop" viewBox="0 0 1050 1720" preserveAspectRatio="none" aria-hidden="true">
+const road="M 238 245 C 325 395, 740 394, 797 550 S 330 718, 235 867 S 734 1000, 797 1180 S 335 1314, 294 1529";
+return `<svg class="map-backdrop" viewBox="0 0 1050 1880" preserveAspectRatio="none" aria-hidden="true">
 <defs>
  <radialGradient id="map-light"><stop stop-color="#fff3bc" stop-opacity=".45"/><stop offset="1" stop-color="#f4ca8a" stop-opacity="0"/></radialGradient>
  <filter id="route-glow" x="-35%" y="-35%" width="170%" height="170%"><feGaussianBlur stdDeviation="5"/></filter>
@@ -25,8 +25,8 @@ return `<svg class="map-backdrop" viewBox="0 0 1050 1720" preserveAspectRatio="n
 <path d="${road}" fill="none" stroke="#dfac64" stroke-width="5" stroke-dasharray="4 16" stroke-linecap="round" class="journey-wire"/>
 <path d="${road}" fill="none" stroke="#ffe8ad" stroke-width="10" opacity=".7" filter="url(#route-glow)" class="journey-glow"/>
 <g class="travelling-spark"><circle r="12" fill="#fff0b4" opacity=".55"/><circle r="6" fill="#df9550" stroke="#fff4cf" stroke-width="3"/><animateMotion dur="22s" repeatCount="indefinite" path="${road}"/></g>
-<g class="map-path-stamps"><circle cx="238" cy="184" r="19"/><circle cx="797" cy="462" r="19"/><circle cx="235" cy="770" r="19"/><circle cx="797" cy="1082" r="19"/><circle cx="294" cy="1439" r="19"/></g>
-<g class="map-stamp-text"><text x="238" y="190">1</text><text x="797" y="468">2</text><text x="235" y="776">3</text><text x="797" y="1088">4</text><text x="294" y="1445">5</text></g>
+<g class="map-path-stamps"><circle cx="238" cy="245" r="19"/><circle cx="797" cy="550" r="19"/><circle cx="235" cy="867" r="19"/><circle cx="797" cy="1180" r="19"/><circle cx="294" cy="1529" r="19"/></g>
+<g class="map-stamp-text"><text x="238" y="251">1</text><text x="797" y="556">2</text><text x="235" y="873">3</text><text x="797" y="1186">4</text><text x="294" y="1535">5</text></g>
 <g fill="#a29b7d" opacity=".3"><path d="M60 775l50-89 50 89zm90 0l45-65 45 65zM885 500l38-100 38 100zm64 0l45-73 45 73zM45 1555l39-73 39 73zm86 0l38-67 38 67z"/></g>
 <g opacity=".6" transform="translate(939 97)"><circle r="34" fill="none" stroke="#9b876a" stroke-width="1.7"/><path d="M0-40V40M-40 0H40" stroke="#9b876a" stroke-width="1"/><path d="M0-38l8 42-8-6-8 6z" fill="#b57f51"/><text y="-50" text-anchor="middle" font-size="15" font-weight="800" fill="#806c5b">N</text></g></svg>`;
 }
