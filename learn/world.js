@@ -87,7 +87,7 @@ function missionRoute(nodes){
     `M ${q.x} ${q.y} C ${q.x+(q.x>500?155:-155)} ${q.y+110}, ${p.x+(p.x>500?155:-155)} ${p.y-110}, ${p.x} ${p.y}`;
   return `<path d="${d}" class="route-curve"/>`;
  }).join('');
- return `<svg class="timeline-curves" viewBox="0 0 1000 ${height}" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="trail-blur"><feGaussianBlur stdDeviation="8"/></filter></defs>
+ return `<svg class="timeline-curves" viewBox="0 0 1000 ${height}" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="trail-blur"><feGaussianBlur stdDeviation="8"/></filter><marker id="history-curve-arrow" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#d99555" stroke-width="1.8"/></marker></defs>
  <g class="trail-halo" filter="url(#trail-blur)">${links}</g><g class="trail-lines">${links}</g>
  </svg>`;
 }
