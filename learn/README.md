@@ -16,6 +16,7 @@ This folder is a **standalone game inside CGL Arena**, hosted at `/pro/learn/`. 
 - Explore the first world immediately. Unlock the next by capturing at least 60% of the current world’s events (all earlier worlds must also meet their thresholds).
 - Capturing an event awards 10 XP once. Mastering a quiz question awards 20 XP once. Fully capturing a chapter earns an additional 60 XP.
 - `Memory Forge` uses active recall. `Boss Battle` contains 26 original SSC-style practice questions. After a completed run, weak-zone rematch uses missed questions from the three most recent completed runs.
+- **Readable design:** the map and missions have animated winding routes, short chapter explanations, 1757–1947 connections, high-contrast larger body text and a per-profile A+ reader toggle. Mobile uses a single-column meandering route.
 - XP and attempts are kept in browser localStorage under `cgl-arena-history-world-v1:<username>`. The portal also migrates earlier History Quest memory flags, bookmarks, and correctly answered quiz questions when available.
 - Source content is original educational revision material, **not a verified SSC paper**. Illustrations are stylized and not intended as authentic historical portraits.
 
