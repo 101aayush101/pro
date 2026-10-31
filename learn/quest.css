@@ -189,3 +189,177 @@
 .hero-modal-body>small{display:block;color:#9b96a3;font-size:10px;margin-top:13px}
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
 @media(max-width:650px){.hero-modal{grid-template-columns:1fr;max-height:92vh}.hero-modal-art{min-height:200px;height:220px}.hero-modal-art svg{max-width:230px}.hero-modal-art:before{width:180px;height:180px;top:6%}.hero-modal-body{padding:23px}.hero-modal-body h2{font-size:29px}}
+
+
+/* ===== History Quest 2.1 · CURVY PATHS + READABLE STUDY CARDS ===== */
+:root{--readable-ink:#293347;--readable-muted:#68778b}
+body{font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.game-body p{line-height:1.72}
+.game-nav button{font-size:13px;letter-spacing:0}
+.game-hud>span,.game-hud a{font-size:12px}
+.game-brand small{font-size:10px;letter-spacing:.12em}
+.eyebrow{font-size:12px;letter-spacing:.09em}
+.adventure-copy p,.heroes-banner p,.forge-heading p,.boss-intro>p,.vault-banner p{font-size:15px;line-height:1.8}
+.adventure-copy h1,.map-heading h2,.mission-intro h1{letter-spacing:-.04em}
+.hero-scores span{font-size:11.5px}
+.map-heading p{font-size:15px;max-width:710px}
+.map-percentage{font-size:12px}
+
+/* Winding chapter route — roomy readable cards */
+.fantasy-map{min-height:1710px;background:linear-gradient(145deg,#f6ead1,#f5ebd9 42%,#eae0ca)}
+.world-stops{height:1710px}
+.world-card{width:min(365px,44%);border-radius:22px;box-shadow:0 18px 40px #765c4225}
+.card-0{top:34px;left:4%}
+.card-1{top:347px;right:3%}
+.card-2{top:659px;left:4%}
+.card-3{top:970px;right:3%}
+.card-4{top:1280px;left:9%}
+.world-card-banner{height:106px}
+.world-card-banner .illustration{height:128px}
+.world-card-info{padding:15px 19px 18px}
+.world-card-top{font-size:11px;letter-spacing:.035em}
+.world-title{margin:11px 0 9px;gap:12px}
+.world-title h3{font-size:21px;line-height:1.18;letter-spacing:-.035em}
+.world-title small{font-size:12px;color:#806e61}
+.world-emoji{width:43px;height:43px;font-size:23px;flex-shrink:0}
+.world-story-hook{padding:0;margin:10px 0}
+.world-story-hook b{display:block;color:#664f49;font-size:13px;line-height:1.35}
+.world-story-hook p{font-size:12.5px;line-height:1.55;color:#72685f;margin:6px 0 0}
+.world-key-fact{background:#f7ebd8;border:1px solid #ead6b8;border-radius:11px;padding:10px 12px;margin:12px 0}
+.world-key-fact>span{display:block;font-size:10.5px;color:#96724d;letter-spacing:.035em;font-weight:900;margin-bottom:5px}
+.world-key-fact>strong{display:block;font-size:12px;color:#5b493d;line-height:1.55;font-weight:800}
+.world-card-bar>div{font-size:11px}
+.world-card-bar i{height:7px;margin:8px 0 12px}
+.world-enter{font-size:12px;padding:12px 14px;border-radius:11px}
+.locked-note{font-size:12px;line-height:1.45}
+.map-path-stamps circle{fill:#fff2d4;stroke:#bd9364;stroke-width:3;filter:drop-shadow(0 3px 4px #7a62444a)}
+.map-stamp-text text{fill:#947046;font:900 18px 'Outfit',sans-serif;text-anchor:middle}
+.journey-wire{animation:riverRun 18s linear infinite;filter:drop-shadow(0 1px 5px #fbddaa)}
+.journey-glow{animation:trailBreathe 4s ease-in-out infinite}
+.travelling-spark{filter:drop-shadow(0 0 10px #ffb75d)}
+@keyframes trailBreathe{0%,100%{opacity:.35}50%{opacity:.85}}
+.quest-hud .hud-kicker{font-size:11px}
+.quest-hud>p{font-size:13px}
+.hud-small{font-size:12px}
+.hud-link,.hud-button{font-size:12px}
+.closing-banner p{font-size:14px}
+
+/* Serpentine mission history — curves connect every chronological checkpoint */
+.timeline-panel{padding:26px}
+.timeline-header h2{font-size:31px}
+.timeline-header p{font-size:14px;color:#6d7a8b;max-width:560px}
+.timeline-header>span{font-size:12px}
+.timeline-rail{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:220px;column-gap:54px;row-gap:36px;padding:12px 0;isolation:isolate}
+.timeline-rail:before{display:none}
+.timeline-curves{position:absolute;z-index:0;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.timeline-curves .route-curve{fill:none;stroke:#b98cdb;stroke-width:15;stroke-linecap:round;stroke-linejoin:round}
+.timeline-curves .trail-lines .route-curve{stroke:#f0bb75;stroke-width:5;stroke-dasharray:14 13;animation:riverRun 14s linear infinite}
+.timeline-curves .trail-halo .route-curve{stroke:#e0b5ff;opacity:.7}
+.timeline-event{position:relative;min-width:0;min-height:0;height:100%;display:block;z-index:2;padding:0;text-align:left}
+.event-node{position:absolute;z-index:4;top:-18px;left:calc(50% - 23px);width:46px;height:46px;border-width:4px;box-shadow:0 7px 17px #7f688c26}
+.event-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:0;height:100%;width:100%;padding:22px 18px 16px;border-radius:18px;background:#fffdf9;border:1.5px solid #ded9e9;box-shadow:0 12px 22px #413b5e14}
+.event-card small{font-size:11.5px;letter-spacing:0;line-height:1.35;color:#6c7791}
+.event-card small b{font-size:13px;color:#7959b7}
+.event-card strong{font-size:19px;line-height:1.18;letter-spacing:-.025em;color:#28314a}
+.event-explain{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:#607084;font-size:12.5px;line-height:1.5;min-height:0}
+.event-card em{font-size:11px;letter-spacing:.01em;color:#775db2;font-weight:900;margin-top:auto}
+.timeline-event.captured .event-card{border-color:#9cdac7;background:#f8fffc}
+.timeline-event.captured .event-node{background:#26ac87;border-color:#26ac87}
+.timeline-event.captured .event-card em{color:#168a6e}
+.timeline-event.on .event-card{border-color:#997bec;box-shadow:0 12px 26px #7252bf22;background:#f7f4ff}
+.mission-progress>div{font-size:12px}
+.mission-intro p{font-size:14px;line-height:1.7}
+.mission-intro small{font-size:12px}
+.intel-top span,.intel-story span,.intel-tile span{font-size:11px;letter-spacing:.025em}
+.intel-story p{font-size:14px;line-height:1.8;color:#4a5b72}
+.intel-tile strong{font-size:13.5px;line-height:1.7}
+.intel-hint{font-size:11.5px;line-height:1.65}
+.capture-button,.next-event{font-size:12px;padding:15px}
+.timeline-event:focus-visible{outline:3px solid #9786e9;outline-offset:4px;border-radius:16px}
+
+/* Better reading size everywhere, including the flashcard/boss/vault */
+.collectible-info h3{font-size:22px}
+.collectible-info>p{font-size:13px;line-height:1.6}
+.collectible-facts span{font-size:11px;line-height:1.4}
+.collectible-info button{font-size:12px}
+.big-flashcard p{font-size:16px}
+.big-flashcard small,.flash-kicker,.forge-bottom{font-size:12px}
+.forge-guide p{font-size:13px}
+.boss-intro>p{font-size:15px}
+.question-panel h2{font-size:clamp(21px,2.7vw,29px)}
+.battle-options button>b{font-size:14px}
+.question-feedback p{font-size:14px}
+.vault-card,.treasure-row{font-size:14px}
+.vault-heading>b,.vault-world small,.vault-button{font-size:12px}
+
+/* Tablet: journey remains a beautiful two-column snake when there is enough room */
+@media(max-width:1300px){
+ .world-card{width:min(345px,44%)}
+ .world-title h3{font-size:19px}
+ .world-story-hook p{font-size:12.5px}
+ .map-layout{grid-template-columns:minmax(0,1fr) 265px}
+ .timeline-rail{column-gap:38px}
+ .event-card{padding:22px 14px 15px}
+ .event-card strong{font-size:17px}
+}
+@media(max-width:1120px){
+ .map-layout{grid-template-columns:1fr}
+ .world-card{width:min(370px,42%)}
+ .fantasy-map{min-height:1710px}
+ .world-stops{height:1710px}
+ .timeline-rail{grid-auto-rows:210px;row-gap:46px}
+ .timeline-curves{height:100%}
+}
+@media(max-width:750px){
+ /* Accessible one-column meander on phone */
+ .timeline-rail{display:flex;flex-direction:column;gap:23px;padding:14px 0 12px 15px}
+ .timeline-rail:before{display:block;content:"";position:absolute;top:15px;bottom:18px;left:20px;width:28px;border:0;opacity:.8;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='130' viewBox='0 0 28 130'%3E%3Cpath d='M12 0 C40 30,-10 65,12 90 S35 120,12 130' stroke='%23c6a3d8' stroke-width='4' fill='none' stroke-dasharray='8 7' stroke-linecap='round'/%3E%3C/svg%3E");background-size:28px 130px;background-repeat:repeat-y;z-index:0}
+ .timeline-curves{display:none}
+ .timeline-event{width:calc(100% - 28px);height:auto;min-height:178px;margin-left:12px!important}
+ .timeline-event:nth-of-type(even){margin-left:28px!important}
+ .event-node{top:16px;left:-27px;width:40px;height:40px;display:grid;place-items:center}
+ .event-card{min-height:178px;height:auto;padding:17px 17px 15px 28px}
+ .event-card strong{font-size:18px}
+ .event-explain{font-size:13px;-webkit-line-clamp:3}
+}
+@media(max-width:650px){
+ body{font-size:15px}
+ .game-body{padding:14px 13px 45px}
+ .fantasy-map{min-height:0;padding:24px 18px}
+ .world-stops{height:auto;display:flex;flex-direction:column;gap:25px;padding-left:20px}
+ .world-stops:before{content:"";position:absolute;left:3px;top:10px;bottom:10px;width:30px;border:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='150'%3E%3Cpath d='M10 0 Q36 35,10 75 T10 150' stroke='%23d9b47e' stroke-width='5' fill='none' stroke-linecap='round' stroke-dasharray='9 9'/%3E%3C/svg%3E");background-repeat:repeat-y;background-size:30px 150px}
+ .world-card{width:100%;top:auto;left:auto;right:auto}
+ .world-card:before{display:none}
+ .world-card-banner{height:118px}
+ .world-card-banner .illustration{height:141px}
+ .world-card-info{padding:17px}
+ .world-title h3{font-size:22px}
+ .world-title small{font-size:12px}
+ .world-story-hook b{font-size:14px}
+ .world-story-hook p{font-size:13px}
+ .world-key-fact strong{font-size:12.5px}
+ .world-card-top{font-size:11px}
+ .map-percentage{font-size:12px}
+ .map-heading p,.adventure-copy p{font-size:14px}
+ .timeline-panel{padding:18px 15px}
+ .timeline-header h2{font-size:27px}
+ .timeline-header p{font-size:13.5px}
+ .timeline-event:nth-of-type(even){margin-left:12px!important}
+ .intel-story p{font-size:14.5px}
+ .intel-tile strong{font-size:13.5px}
+ .collectible-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .collectible-info>p{font-size:12px;min-height:0}
+ .collectible-facts span{font-size:10px}
+ .collectible-info button{font-size:11px}
+ .game-nav button{font-size:11px}
+}
+@media(max-width:400px){
+ .event-card strong{font-size:17px}
+ .timeline-event{margin-left:6px!important}
+ .collectible-grid{grid-template-columns:1fr}
+ .world-card-info{padding:15px}
+}
+@media(prefers-reduced-motion:reduce){
+ .journey-wire,.journey-glow,.timeline-curves .trail-lines .route-curve{animation:none!important}
+ .travelling-spark{display:none}
+}
