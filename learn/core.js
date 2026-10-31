@@ -13,6 +13,19 @@ const fontKey='cgl-arena-history-textsize-v1:'+user;
 let largeText=localStorage.getItem(fontKey)==='large';
 document.body.classList.toggle('reader-large',largeText);
 const state={view:'world',region:0,selected:'0-0',filter:'all',heroFilter:'all',forgeRegion:'all',forgeIndex:0,flipped:false,run:null};
+const navigationStack=[];
+function locationSnapshot(){return {view:state.view,region:state.region,selected:state.selected,heroFilter:state.heroFilter,forgeRegion:state.forgeRegion,forgeIndex:state.forgeIndex,flipped:state.flipped}}
+function pushSnapshot(before){const prev=before||locationSnapshot();if(prev.view===state.view&&prev.region===state.region&&prev.selected===state.selected)return;navigationStack.push(prev);if(navigationStack.length>30)navigationStack.shift()}
+function navigateBack(){
+ if(navigationStack.length){
+  const prev=navigationStack.pop();
+  Object.assign(state,prev);
+  render();
+  window.scrollTo({top:0,behavior:'instant'});
+ }else if(state.view!=='world'){state.view='world';render();window.scrollTo({top:0,behavior:'instant'})}
+ else window.location.href='../#/';
+}
+
 let save={learned:{},starred:{},best:{},runs:[]};
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 try{const a=JSON.parse(localStorage.getItem(key)||'null');if(a){for(const field of ['learned','starred','best'])if(a[field]&&typeof a[field]==='object')save[field]=a[field];if(Array.isArray(a.runs))save.runs=a.runs.slice(0,25);if(a.run&&Array.isArray(a.run.ids))state.run=a.run}}catch{}
@@ -40,7 +53,7 @@ const badges=()=>[
 function toast(message){const t=document.getElementById('toast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2400)}
 function nav(){
 const options=[['world','🗺️','World Map'],['mission','🚩','My Quest'],['heroes','🎭','Heroes'],['forge','🧠','Memory Forge'],['boss','⚔️','Boss Battle'],['vault','🏆','My Vault']];
-return '<header class="game-top"><a href="../#/" class="game-brand" aria-label="Return to CGL Arena"><span class="logo-star">✦</span><span>CGL <b>ARENA</b><small>HISTORY QUEST</small></span></a><nav class="game-nav">'+options.map(([id,ico,label])=>`<button type="button" data-go="${id}" class="${state.view===id?'on':''}"><span>${ico}</span> ${label}</button>`).join('')+'</nav><div class="game-hud"><span>✦ '+xp()+' XP</span><button class="font-toggle" data-text-size="toggle" aria-pressed="'+largeText+'" title="Toggle easier-to-read large text">'+(largeText?'A−':'A+')+' <small>TEXT</small></button><a href="../#/">Exit ↗</a></div></header>';
+return '<header class="game-top"><button type="button" class="game-back" data-back="1" aria-label="Go back to previous screen">← <span>'+(state.view==='world'&&navigationStack.length===0?'CGL Arena':'Back')+'</span></button><a href="../#/" class="game-brand" aria-label="Return to CGL Arena"><span class="logo-star">✦</span><span>CGL <b>ARENA</b><small>HISTORY QUEST</small></span></a><nav class="game-nav">'+options.map(([id,ico,label])=>`<button type="button" data-go="${id}" class="${state.view===id?'on':''}"><span>${ico}</span> ${label}</button>`).join('')+'</nav><div class="game-hud"><span>✦ '+xp()+' XP</span><button class="font-toggle" data-text-size="toggle" aria-pressed="'+largeText+'" title="Toggle easier-to-read large text">'+(largeText?'A−':'A+')+' <small>TEXT</small></button><a href="../#/">Exit ↗</a></div></header>';
 }
 function render(){
 let body='';
@@ -53,21 +66,28 @@ else if(state.view==='vault')body=window.HQ_PLAY.vault();
 root.innerHTML='<div class="game-shell">'+nav()+'<main id="game-view" class="game-body view-'+state.view+'">'+body+'</main><footer class="game-footer"><span>✦ 1757 — 1947 / HISTORY QUEST WORLD</span><span>Study game · Not official SSC question paper · Progress saved on this browser</span><a href="../#/">CGL Arena ↗</a></footer></div>';
 document.title=(state.view==='world'?'Adventure Map':state.view==='mission'?eras[state.region].name:state.view.toUpperCase())+' · History Quest';
 }
-function go(view){
+function go(view,previous){
 if(!['world','mission','heroes','forge','boss','vault'].includes(view))return;
 if(view==='mission'&&!open(state.region)){toast('🔒 Discover more events to unlock this world');return}
+const before=previous||locationSnapshot();
+if(before.view!==view||before.region!==state.region||before.selected!==state.selected) {
+ navigationStack.push(before);
+ if(navigationStack.length>30)navigationStack.shift();
+}
 state.view=view;render();window.scrollTo({top:0,behavior:'instant'});
 }
 function enter(region){
 if(!open(region)){toast('🔒 This world is locked. Complete the previous mission first.');return}
+const previous=locationSnapshot();
 state.region=region;
 const first=events.find(ev=>ev.era===region&&!save.learned[ev.id])||events.find(ev=>ev.era===region);
-state.selected=first.id;go('mission');
+state.selected=first.id;go('mission',previous);
 }
 function select(id){
 const ev=events.find(ev=>ev.id===id);if(!ev)return;
 if(!open(ev.era)){toast('🔒 Unlock this world to reveal the story.');return}
-state.region=ev.era;state.selected=id;go('mission');
+const previous=locationSnapshot();
+state.region=ev.era;state.selected=id;go('mission',previous);
 }
 function capture(id){
 if(save.learned[id])return false;
@@ -77,7 +97,8 @@ function star(id){save.starred[id]=!save.starred[id];persist();render();toast(sa
 function allData(){return {eras,events,questions,state,save,esc,count,required,cleared,complete,open,explored,wins,xp,rank,badges,toast,persist,go,enter,select,capture,star,render,user}}
 const api=allData();window.HQ=api;
 root.addEventListener('click',evt=>{
-const el=evt.target.closest('[data-text-size],[data-go],[data-enter],[data-event],[data-capture],[data-star],[data-next-event],[data-qaction],[data-filter-hero],[data-faction]');if(!el)return;
+const el=evt.target.closest('[data-back],[data-text-size],[data-go],[data-enter],[data-event],[data-capture],[data-star],[data-next-event],[data-qaction],[data-filter-hero],[data-faction]');if(!el)return;
+if(el.dataset.back){navigateBack();return}
 if(el.dataset.textSize){largeText=!largeText;document.body.classList.toggle('reader-large',largeText);try{localStorage.setItem(fontKey,largeText?'large':'normal')}catch{}render();toast(largeText?'🔎 Larger reading text enabled':'🔎 Standard reading text');return}
 if(el.dataset.go){go(el.dataset.go);return}
 if(el.dataset.enter!==undefined){enter(Number(el.dataset.enter));return}
