@@ -79,8 +79,8 @@ function eventCard(ev,j){
  <em>${marked?'✓ MEMORY CAPTURED':'OPEN THE STORY →'}</em></span></button>`;
 }
 function missionRoute(nodes){
- const rows=Math.ceil(nodes.length/2),height=rows*256;
- const points=nodes.map((_,j)=>{const row=Math.floor(j/2),col=row%2===0?j%2:1-j%2;return {x:col===0?257:743,y:122+row*256}});
+ const rowTall=!!document.body?.classList?.contains('reader-large'),step=rowTall?297:256,center=rowTall?139:122;const rows=Math.ceil(nodes.length/2),height=rows*step;
+ const points=nodes.map((_,j)=>{const row=Math.floor(j/2),col=row%2===0?j%2:1-j%2;return {x:col===0?257:743,y:center+row*step}});
  const links=points.slice(1).map((p,j)=>{
   const q=points[j],same=Math.abs(p.y-q.y)<1;
   const d=same?`M ${q.x} ${q.y} C ${(q.x+p.x)/2} ${q.y-82}, ${(q.x+p.x)/2} ${p.y+82}, ${p.x} ${p.y}`:
