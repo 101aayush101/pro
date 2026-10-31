@@ -9,6 +9,9 @@ const events=eras.flatMap((era,i)=>era.nodes.map((row,j)=>({id:i+'-'+j,era:i,ind
 const questions=db.questions;
 const key='cgl-arena-history-world-v1:'+user;
 const prior='cgl-arena-learn-modern-v1:'+user;
+const fontKey='cgl-arena-history-textsize-v1:'+user;
+let largeText=localStorage.getItem(fontKey)==='large';
+document.body.classList.toggle('reader-large',largeText);
 const state={view:'world',region:0,selected:'0-0',filter:'all',heroFilter:'all',forgeRegion:'all',forgeIndex:0,flipped:false,run:null};
 let save={learned:{},starred:{},best:{},runs:[]};
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -37,7 +40,7 @@ const badges=()=>[
 function toast(message){const t=document.getElementById('toast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2400)}
 function nav(){
 const options=[['world','🗺️','World Map'],['mission','🚩','My Quest'],['heroes','🎭','Heroes'],['forge','🧠','Memory Forge'],['boss','⚔️','Boss Battle'],['vault','🏆','My Vault']];
-return '<header class="game-top"><a href="../#/" class="game-brand" aria-label="Return to CGL Arena"><span class="logo-star">✦</span><span>CGL <b>ARENA</b><small>HISTORY QUEST</small></span></a><nav class="game-nav">'+options.map(([id,ico,label])=>`<button type="button" data-go="${id}" class="${state.view===id?'on':''}"><span>${ico}</span> ${label}</button>`).join('')+'</nav><div class="game-hud"><span>✦ '+xp()+' XP</span><a href="../#/">Exit ↗</a></div></header>';
+return '<header class="game-top"><a href="../#/" class="game-brand" aria-label="Return to CGL Arena"><span class="logo-star">✦</span><span>CGL <b>ARENA</b><small>HISTORY QUEST</small></span></a><nav class="game-nav">'+options.map(([id,ico,label])=>`<button type="button" data-go="${id}" class="${state.view===id?'on':''}"><span>${ico}</span> ${label}</button>`).join('')+'</nav><div class="game-hud"><span>✦ '+xp()+' XP</span><button class="font-toggle" data-text-size="toggle" aria-pressed="'+largeText+'" title="Toggle easier-to-read large text">'+(largeText?'A−':'A+')+' <small>TEXT</small></button><a href="../#/">Exit ↗</a></div></header>';
 }
 function render(){
 let body='';
@@ -74,7 +77,8 @@ function star(id){save.starred[id]=!save.starred[id];persist();render();toast(sa
 function allData(){return {eras,events,questions,state,save,esc,count,required,cleared,complete,open,explored,wins,xp,rank,badges,toast,persist,go,enter,select,capture,star,render,user}}
 const api=allData();window.HQ=api;
 root.addEventListener('click',evt=>{
-const el=evt.target.closest('[data-go],[data-enter],[data-event],[data-capture],[data-star],[data-next-event],[data-qaction],[data-filter-hero],[data-faction]');if(!el)return;
+const el=evt.target.closest('[data-text-size],[data-go],[data-enter],[data-event],[data-capture],[data-star],[data-next-event],[data-qaction],[data-filter-hero],[data-faction]');if(!el)return;
+if(el.dataset.textSize){largeText=!largeText;document.body.classList.toggle('reader-large',largeText);try{localStorage.setItem(fontKey,largeText?'large':'normal')}catch{}render();toast(largeText?'🔎 Larger reading text enabled':'🔎 Standard reading text');return}
 if(el.dataset.go){go(el.dataset.go);return}
 if(el.dataset.enter!==undefined){enter(Number(el.dataset.enter));return}
 if(el.dataset.event){select(el.dataset.event);return}
