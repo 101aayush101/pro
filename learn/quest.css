@@ -386,3 +386,6 @@ body{font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
  .game-hud .font-toggle small{display:none}
  .game-hud .font-toggle{padding:8px}
 }
+
+/* Extra bottom breathing room for the new context-rich world cards */
+@media(min-width:651px){.fantasy-map{min-height:1880px}.world-stops{height:1880px}}
