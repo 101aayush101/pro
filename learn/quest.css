@@ -363,3 +363,26 @@ body{font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
  .journey-wire,.journey-glow,.timeline-curves .trail-lines .route-curve{animation:none!important}
  .travelling-spark{display:none}
 }
+
+/* Reader accessibility: large-type preference survives revisits */
+.game-hud .font-toggle{background:#322f53;border:1px solid #8573bf;color:#fff;border-radius:11px;min-height:38px;padding:7px 10px;font:900 15px 'Outfit',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;line-height:1}
+.game-hud .font-toggle:hover,.game-hud .font-toggle[aria-pressed="true"]{background:#6d55c5;border-color:#beadfa}
+.game-hud .font-toggle small{font:800 9px 'DM Sans',sans-serif;letter-spacing:.05em}
+.timeline-curves .trail-lines .route-curve{marker-end:url(#history-curve-arrow)}
+.reader-large .game-body p,.reader-large .world-story-hook p,.reader-large .event-explain,.reader-large .intel-story p,.reader-large .collectible-info>p,.reader-large .question-feedback p{font-size:16px!important;line-height:1.85!important}
+.reader-large .world-key-fact strong,.reader-large .intel-tile strong,.reader-large .event-card small,.reader-large .event-card em{font-size:14px!important;line-height:1.65!important}
+.reader-large .world-title h3,.reader-large .event-card strong{font-size:22px!important;line-height:1.3!important}
+.reader-large .world-card-info,.reader-large .event-card,.reader-large .intel-panel{letter-spacing:.005em}
+.reader-large .timeline-rail{grid-auto-rows:255px;row-gap:42px}
+.reader-large .timeline-curves{opacity:.5}
+.reader-large .event-explain{-webkit-line-clamp:4}
+@media(max-width:750px){
+ .game-hud .font-toggle{padding:8px 10px}
+ .reader-large .timeline-rail{display:flex;gap:22px}
+ .reader-large .timeline-event{min-height:200px}
+ .reader-large .event-card{min-height:200px;height:auto}
+}
+@media(max-width:400px){
+ .game-hud .font-toggle small{display:none}
+ .game-hud .font-toggle{padding:8px}
+}
